@@ -1,0 +1,31 @@
+name: askless
+description: Flutter client of Askless framework, which facilitates building servers for JavaScript and Flutter Apps
+
+version: 1.0.0 # TODO onupdate:
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+homepage: https://github.com/WiseTap/askless-flutter-client
+
+repository: https://github.com/WiseTap/askless-flutter-client
+
+documentation: https://github.com/WiseTap/askless-flutter-client/blob/master/documentation/english_documentation.md
+
+issue_tracker: https://github.com/WiseTap/askless-flutter-client/issues
+
+dependencies:
+  flutter:
+    sdk: flutter
+  random_string: ^2.0.1
+  synchronized: ^2.2.0
+  connectivity: ^0.4.8+5
+  web_socket_channel: ^1.1.0
+
+
+#dev_dependencies:
+#  flutter_test:
+#    sdk: flutter
+
+#flutter:
+#  uses-material-design: true
