@@ -23,7 +23,7 @@ It's recommended to call `init` in the `main` method of the application.
 
 #### serverUrl
 
-The URL of the server, must start with `ws://` or `wss://`. Example: `ws://192.168.2.3:3000`.
+The URL of the server, must start with `ws://` or `wss://`. Example: `ws://192.168.2.1:3000`.
 
 #### projectName
  Name for this project (optional). 

@@ -5,7 +5,7 @@ import 'package:askless/askless.dart';
 
 import 'TrackingApp.dart';
 
-final serverUrl = 'ws://192.168.2.4:3000';
+final serverUrl = 'ws://192.168.2.1:3000';
 
 void main() {
   AsklessClient.instance.init(

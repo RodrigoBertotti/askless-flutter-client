@@ -521,7 +521,7 @@ class AsklessClient {
   ///
   /// It's recommended to call [init] in the [main] method of the application.
   ///
-  /// [serverUrl] The URL of the server, must start with [ws://] or [wss://]. Example: [ws://192.168.2.3:3000].
+  /// [serverUrl] The URL of the server, must start with [ws://] or [wss://]. Example: [ws://192.168.2.1:3000].
   ///
   /// [logger]  Allow customize the behavior of internal logs and enable/disable the default logger (optional).
   ///
@@ -532,7 +532,7 @@ class AsklessClient {
     assert(serverUrl!=null);
     assert(serverUrl.startsWith('ws:') || serverUrl.startsWith('wss:'));
     if(serverUrl.contains('192.168.') && !serverUrl.contains(':'))
-      throw 'Please, inform the port on the serverUrl, default is 3000, example: ws://192.168.2.3:3000';
+      throw 'Please, inform the port on the serverUrl, default is 3000, example: ws://192.168.2.1:3000';
     Internal.instance.serverUrl = serverUrl;
     this._projectName = projectName;
     Internal.instance._logger = logger;
