@@ -5,13 +5,12 @@ import 'package:askless/askless.dart';
 
 import 'TrackingApp.dart';
 
-final String ipv4Address = '192.168.2.7';
-final serverUrl = 'ws://'+ipv4Address+':3000';
+final serverUrl = 'ws://192.168.2.4:3000';
 
 void main() {
   AsklessClient.instance.init(
-      serverUrl: serverUrl,
-      projectName: 'tracking-ts'
+    serverUrl: serverUrl,
+    projectName: 'tracking-ts',
   );
   AsklessClient.instance.connect();
   runApp(TrackingApp());

@@ -19,7 +19,7 @@ class SendMessageToServerAgainTask extends TimedTask{
 
   @override
   void run() {
-    if (_connection==Connection.CONNECTED_WITH_SUCCESS)
+    if (_connection==Connection.CONNECTED_WITH_SUCCESS) //TODO: mudar para _connection!=Connection.DISCONNECTED ?
       Internal.instance.middleware?.sendClientData?.sendMessagesToServerAgain();
   }
 

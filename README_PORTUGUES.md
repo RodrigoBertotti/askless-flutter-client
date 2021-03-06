@@ -61,7 +61,8 @@ pubspec.yaml:
 
     import 'package:askless/askless.dart';
 
-4 - Inicialize o servidor com `Askless.instance.init(serverUrl:"ws://<IPV4>:<PORT>")` informando o endereço IPV4 obtido e a porta (padrão: 3000).
+4 - Inicialize o servidor com `Askless.instance.init(serverUrl:"ws://<IPV4>:<PORT>")` 
+informando o endereço IPv4 da rede local obtido e a porta (padrão: 3000).
 
 5 - Realize a conexão com o servidor com `Askless.instance.connect()`
     

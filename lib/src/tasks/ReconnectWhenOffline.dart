@@ -1,6 +1,3 @@
-
-
-
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
@@ -36,7 +33,7 @@ class ReconnectWhenOffline{
               try{
                 AsklessClient.instance.reconnect();
               }catch(e){
-                Internal.instance.logger(message: 'ReconnectWhenOffline', level:  Level.debug, additionalData: e);
+                 Internal.instance.logger(message: 'ReconnectWhenOffline', level:  Level.error, additionalData: e);
               }
             }
           });

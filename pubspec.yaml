@@ -1,5 +1,5 @@
 name: askless
-description: Flutter client of Askless framework, which facilitates building servers for JavaScript and Flutter Apps
+description: Flutter client of Askless framework, which facilitates building realtime servers for JavaScript and Flutter Apps
 
 version: 1.0.0 # TODO onupdate:
 

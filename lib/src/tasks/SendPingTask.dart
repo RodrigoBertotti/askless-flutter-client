@@ -17,7 +17,7 @@ class SendPingTask extends TimedTask{
     Internal.instance.middleware.listeningTo.forEach((listen) {
       listeningTo.add(new ListeningTo(clientRequestId:listen.clientRequestId, listenId: listen.listenId, route: listen.route, query: listen.query));
     });
-    Internal.instance.middleware?.channel?.sink?.add(jsonEncode(new PingPong(listeningToRoutes: listeningTo).toMap()));
+    Internal.instance.middleware?.channel?.sink?.add(jsonEncode(new PingPong(listeningToRoutes: listeningTo).toMap())); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
   }
 
 }

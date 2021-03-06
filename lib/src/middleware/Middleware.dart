@@ -67,7 +67,7 @@ class Middleware {
   }
 
   get isConnected {
-    return channel != null;
+    return channel != null; //TODO remove? (I removed on the js client side)
   }
 
   get lastPongFromServer {
@@ -159,7 +159,7 @@ class Middleware {
         Internal.instance.logger(
             message: "Data could not be sent, got an error",
             level: Level.error,
-            additionalData: response);
+            additionalData: response?.toString());
         Internal.instance.notifyConnectionChanged(Connection.DISCONNECTED,
             disconnectionReason:
                 response.error.code == ReqErrorCode.TOKEN_INVALID
@@ -220,7 +220,7 @@ class Middleware {
 
     Internal.instance.sendPingTask
         .changeInterval(connectionConfiguration.intervalInSecondsClientPing);
-    Internal.instance.sendMessageToServerAgainTask.changeInterval(
+    Internal.instance.sendMessageToServerAgainTask.changeInterval( // TODO? fazer tal como foi feito no lado web?
         connectionConfiguration.intervalInSecondsClientSendSameMessage);
     Internal.instance.reconnectWhenDidNotReceivePongFromServerTask
         .changeInterval(connectionConfiguration
@@ -369,9 +369,6 @@ class Middleware {
     else if (this.channel.sink == null)
       Internal.instance
           .logger(message: "this.channel.sink==null", level: Level.error);
-    this
-        .channel
-        ?.sink
-        ?.add(jsonEncode(new ClientConfirmReceiptCli(serverId).toMap()));
+    this.channel?.sink?.add(jsonEncode(new ClientConfirmReceiptCli(serverId).toMap()));
   }
 }

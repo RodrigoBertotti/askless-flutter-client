@@ -61,6 +61,8 @@ class SendClientData {
 
 
   Future<void> sendMessagesToServerAgain() async {
+    // TODO? fazer como na web, parando o método caso if Internal.instance.connection == "DISCONNECTED"
+
     List<_Request> copy;
     await _lockPendingRequestsList.synchronized(() async {
       copy = []..addAll(this._pendingRequestsList);
@@ -68,7 +70,7 @@ class SendClientData {
     for (final pendingRequest in copy) {
       if (!pendingRequest.serverReceived) {
         final json = jsonEncode(pendingRequest.data.toMap());
-        this.middleware.channel?.sink?.add(json);
+        this.middleware.channel?.sink?.add(json); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
       }
     }
   }
@@ -77,7 +79,7 @@ class SendClientData {
 
     final json = jsonEncode(data.toMap());
     Internal.instance.logger(message: 'Sending to Server...', level: Level.debug, additionalData: json);
-    this.middleware.channel?.sink?.add(json);
+    this.middleware.channel?.sink?.add(json); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
 
     final completer = new Completer<ResponseCli>();
 
@@ -116,7 +118,7 @@ class SendClientData {
     };
 
     _lockPendingRequestsList.synchronized(() async {
-      if (this.middleware.isConnected) {
+      if (this.middleware.isConnected) {  //TODO? Internal.instance.connection != "DISCONNECTED"
         addAsPending();
       } else {
         if (data.waitUntilGetServerConnection) {

@@ -2,7 +2,7 @@
 
 :checkered_flag: [Português (Portuguese)](README_PORTUGUES.md)
 
-Flutter client of Askless framework, which facilitates building servers for JavaScript and Flutter Apps,
+Flutter client of Askless framework, which facilitates building realtime servers for JavaScript and Flutter Apps,
 Askless allows to:
 
 - :handshake: perform a websocket connection to exchange data that: 
@@ -38,7 +38,7 @@ This is the client side in Flutter,
 
 ## Getting Started
 
-![Alt Text](https://media.giphy.com/media/xDNd4CjRfJ1yHvRDGg/giphy.gif)
+![Alt Text](example/tracking/tracking.gif)
 
 The "Getting Started" is a example of the Flutter client,
 an example is executed locally.
@@ -61,8 +61,10 @@ pubspec.yaml:
 
     import 'package:askless/askless.dart';
 
-4 - Initialize the server with `Askless.instance.init(serverUrl:"ws://<IPV4>:<PORT>")` 
-informing the IPV4 address and port (default: 3000).
+4 - Initialize
+informing the server url with port (default: 3000).
+On the server side you can access the `myAsklessServer.localUrl` attribute
+to discover.
 
 5 - Perform the connection with `Askless.instance.connect()`
     
@@ -127,7 +129,7 @@ a route in the server
 
 Project ready! You can run :)
 
-Following this links, you can also check this
+Following these links, you can also check this
 "Getting Started" complete project of the
  [Flutter client](example/tracking) and of the
  [server in Node.js](https://github.com/WiseTap/askless/blob/master/example/tracking-ts/index.ts).
