@@ -48,18 +48,17 @@ class HandleReceive{
 
     lastMessagesFromServer.add(new LastServerMessage(serverId));
 
-    //Removing unnecessary info's
     final NOW = DateTime.now().millisecondsSinceEpoch;
     if(lastMessagesFromServer.length > 100){
-      Internal.instance.logger(message: "Start of removing unnecessary info's... ("+(lastMessagesFromServer.length.toString())+")");
+      Internal.instance.logger(message: "Start of removing old messages received from server... (total: "+(lastMessagesFromServer.length.toString())+")");
       final List<LastServerMessage> remove = [];
-      for(int i=lastMessagesFromServer.length-1; i>=0 || remove.length>=10; i--){
+      for(int i=lastMessagesFromServer.length-1; i >= 0 && remove.length < 10; i--){
         final messageReceivedFromServer = lastMessagesFromServer[i];
         if(messageReceivedFromServer.messageReceivedAtSinceEpoch + 10 * 60 * 1000 < NOW) //keep received message for 10 minutes
           remove.add(messageReceivedFromServer);
       }
       remove.forEach((element) => lastMessagesFromServer.remove(element));
-      Internal.instance.logger(message: "End of removing unnecessary info's... ("+(lastMessagesFromServer.length.toString())+")");
+      Internal.instance.logger(message: "...end of removing old messages received from server (removed: "+(remove.length.toString())+")");
     }
 
     if(messageMap[NewDataForListener.type]!=null) {
