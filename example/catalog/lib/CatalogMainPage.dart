@@ -36,7 +36,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
     AsklessClient.instance.addOnConnectionChange(_onConnectionChange);
 
     _searchController.addListener(() {
-      print("Updating... " + _searchController.text);
+      print("Searching for: " + _searchController.text);
       refreshProductsBySearch(search: _searchController.text);
     });
 
@@ -83,7 +83,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
   }
 
   showSnackBar({String success, String err, Duration duration}) {
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
       content: Text(
         success ?? err,
         style: TextStyle(color: Colors.white),
@@ -94,6 +94,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
   }
 
   connectAsViewer() {
+    selectedToken = null;
     AsklessClient.instance.connect();
   }
 
@@ -101,8 +102,8 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
       {@required ownClientId, @required String token, @required onDisconnect}) {
     this.selectedToken = token;
     AsklessClient.instance.connect(
-        ownClientId: ownClientId,
-        headers: {'Authorization': token},
+      ownClientId: ownClientId,
+      headers: {'Authorization': token},
     ).then((connection) {
       if(connection.isSuccess) {
         this.showSnackBar(
@@ -144,15 +145,18 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                 ),
                 Container(
                   width: 300,
-                  child: RaisedButton(
+                  child: ElevatedButton(
                     child: Text('Connect as viewer, no token on headers'),
                     onPressed: () {
                       setState(() {
-                        selectedToken = null;
                         this.connectAsViewer();
                       });
                     },
-                    color: getConnectionColor(null, _connection),
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            getConnectionColor(null, _connection)
+                        )
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -172,8 +176,8 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                 ),
                 AsklessClient.instance.listenAndBuild(
                   route: 'product/all',
+                  query: {'search': search},
                   builder: (context, snapshots) {
-                    List<Product> products;
                     if (snapshots.error != null) {
                       return Center(
                         child: Text(
@@ -182,41 +186,51 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                         ),
                       );
                     }
-                    products = Product.fromMapList(snapshots.data);
-                    if (products.length == 0) {
-                      return Container(
-                        height: 100,
-                        child: Center(
-                          child: _connection == Connection.DISCONNECTED && AsklessClient.instance.disconnectReason==DisconnectionReason.TOKEN_INVALID ? Text(
-                            'Your token is invalid!',
-                            style: TextStyle(color: Colors.red),
-                          ) : Text(
-                            'No registered products',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                      );
-                    }
+                    final products = Product.fromMapList(snapshots.data);
 
-                    return Column(
-                      children: products
-                          .map((product) => Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  GestureDetector(
-                                    child: Icon(Icons.remove, color: Colors.grey,),
-                                    onTap: () => removeProduct(id: product.id),
-                                  ),
-                                  Container(
-                                    width: 300,
-                                    child: Center(
-                                      child: Text(
-                                          '\$${product.price} - ${product.name}'),
+                    return FutureBuilder<Color>(
+                        initialData: Colors.black,
+                        key: new GlobalKey(),
+                        future: Future.delayed(Duration(milliseconds: 750,)).then((_) => Colors.black45),
+                        builder: (context, snapshot) {
+                          if (products.length == 0) {
+                            return Container(
+                              height: 100,
+                              child: Center(
+                                child: _connection == Connection.DISCONNECTED && AsklessClient.instance.disconnectReason==DisconnectionReason.TOKEN_INVALID ? Text(
+                                  'Your token is invalid!',
+                                  style: TextStyle(color: Colors.red),
+                                ) : Text(
+                                  'No registered products',
+                                  style: TextStyle(color: snapshot.data),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return Column(
+                            children: products
+                                .map((product) => Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                GestureDetector(
+                                  child: Icon(Icons.remove, color: snapshot.data,),
+                                  onTap: () => removeProduct(id: product.id),
+                                ),
+                                Container(
+                                  width: 300,
+                                  child: Center(
+                                    child: Text(
+                                      '\$${product.price} - ${product.name}',
+                                      style: TextStyle(color: snapshot.data),
                                     ),
-                                  )
-                                ],
-                              ))
-                          .toList(),
+                                  ),
+                                )
+                              ],
+                            ))
+                                .toList(),
+                          );
+                        }
                     );
                   },
                   query: {'search': search},
@@ -381,7 +395,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
       width: 300,
       child: RaisedButton(
           child: Text(
-              (wrongToken ? 'WRONG token - ' : '') + 'Connect as admin, headers { Authorization: ' +
+            (wrongToken ? 'WRONG token - ' : '') + 'Connect as admin, headers { Authorization: ' +
                 token.toString() +
                 ', ownClientId: ' +
                 ownClientId.toString() +
