@@ -70,7 +70,7 @@ class SendClientData {
     for (final pendingRequest in copy) {
       if (!pendingRequest.serverReceived) {
         final json = jsonEncode(pendingRequest.data.toMap());
-        this.middleware.channel?.sink?.add(json); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
+        this.middleware.channel?.sink?.add(json); //TODO: remover do lado web o que foi adicionado aqui?
       }
     }
   }

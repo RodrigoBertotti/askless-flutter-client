@@ -166,8 +166,7 @@ class Middleware {
                     ? DisconnectionReason.TOKEN_INVALID
                     : null);
       }
-    } while (
-        response.error != null && response.error.code == ReqErrorCode.TIMEOUT);
+    } while (response.error != null && response.error.code == ReqErrorCode.TIMEOUT);
 
     return response;
   }

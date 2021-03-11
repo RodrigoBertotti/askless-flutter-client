@@ -19,7 +19,7 @@ class SendMessageToServerAgainTask extends TimedTask{
 
   @override
   void run() {
-    if (_connection==Connection.CONNECTED_WITH_SUCCESS) //TODO: mudar para _connection!=Connection.DISCONNECTED ?
+    if (_connection==Connection.CONNECTED_WITH_SUCCESS) //TODO: analisar no lado web! será que não é melhor deixar _connection==Connection.CONNECTED_WITH_SUCCESS??? Mudar isso deu problema parece
       Internal.instance.middleware?.sendClientData?.sendMessagesToServerAgain();
   }
 
