@@ -64,10 +64,6 @@ class Middleware {
         .send(data: requestCli, neverTimeout: neverTimeout);
   }
 
-  get isConnected {
-    return channel != null; //TODO remove? (I removed on the js client side)
-  }
-
   get lastPongFromServer {
     return _lastPongFromServer;
   }

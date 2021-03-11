@@ -116,7 +116,7 @@ class SendClientData {
     };
 
     _lockPendingRequestsList.synchronized(() async {
-      if (this.middleware.isConnected) {  //TODO? Internal.instance.connection != "DISCONNECTED"
+      if (Internal.instance.middleware.channel != null){  //TODO analisar no lado do cliente JS
         addAsPending();
       } else {
         if (data.waitUntilGetServerConnection) {
