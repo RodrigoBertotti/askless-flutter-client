@@ -219,14 +219,17 @@ class Middleware {
 
     Internal.instance.sendPingTask
         .changeInterval(connectionConfiguration.intervalInSecondsClientPing);
-    Internal.instance.sendMessageToServerAgainTask.changeInterval( // TODO? fazer tal como foi feito no lado web?
-        connectionConfiguration.intervalInSecondsClientSendSameMessage);
     Internal.instance.reconnectWhenDidNotReceivePongFromServerTask
         .changeInterval(connectionConfiguration
             .reconnectClientAfterSecondsWithoutServerPong);
 
     Internal.instance
         .notifyConnectionChanged(Connection.CONNECTED_WITH_SUCCESS);
+
+    Future.delayed(Duration(seconds: 1), (){
+      Internal.instance.sendMessageToServerAgainTask.changeInterval(
+          connectionConfiguration.intervalInSecondsClientSendSameMessage);
+    });
   }
 
   void disconnectAndClear({VoidCallback onDone}) {
