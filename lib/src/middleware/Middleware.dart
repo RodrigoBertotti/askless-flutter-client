@@ -153,7 +153,11 @@ class Middleware {
         Internal.instance.logger(
             message: "Data could not be sent, got an error",
             level: Level.error,
-            additionalData: response?.toString());
+            additionalData:
+              (response?.error?.code??'') + ' ' +
+              (response?.error?.description??'') + '\n' +
+              (response?.error?.stack??'')
+        );
         Internal.instance.notifyConnectionChanged(Connection.DISCONNECTED,
             disconnectionReason:
                 response.error.code == ReqErrorCode.TOKEN_INVALID
