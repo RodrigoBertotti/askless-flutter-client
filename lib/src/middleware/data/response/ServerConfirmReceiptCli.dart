@@ -1,4 +1,3 @@
-import 'package:askless/src/middleware/data/response/RespondError.dart';
 import 'package:askless/src/middleware/data/response/ResponseCli.dart';
 
 class ServerConfirmReceiptCli extends ResponseCli{

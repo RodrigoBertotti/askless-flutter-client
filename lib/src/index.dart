@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:askless/src/tasks/ReconnectClientWhenDidNotReceivePongFromServerTask.dart';
-import 'package:askless/src/middleware/data/request/AbstractRequestCli.dart';
 import 'package:askless/src/middleware/data/request/OperationRequestCli.dart';
 import 'package:askless/src/middleware/data/response/NewRealtimeData.dart';
 import 'package:askless/src/middleware/data/response/ResponseCli.dart';

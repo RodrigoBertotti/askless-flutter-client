@@ -1,4 +1,3 @@
-import 'package:askless/askless.dart';
 
 class Product{
   int id;

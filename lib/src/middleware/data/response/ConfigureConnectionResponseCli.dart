@@ -1,5 +1,3 @@
-import 'package:askless/src/constants.dart';
-import 'package:askless/src/middleware/data/response/RespondError.dart';
 import 'package:askless/src/middleware/data/response/ResponseCli.dart';
 
 class ConfigureConnectionResponseCli extends ResponseCli{

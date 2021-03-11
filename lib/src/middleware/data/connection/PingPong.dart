@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:askless/src/middleware/data/request/OperationRequestCli.dart';
-import 'package:askless/src/middleware/data/response/NewRealtimeData.dart';
 
 class ListeningTo extends ListenCli{
   String listenId;

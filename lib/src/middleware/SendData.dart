@@ -7,10 +7,8 @@ import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/Middleware.dart';
 import 'package:askless/src/middleware/data/response/RespondError.dart';
 import 'data/request/AbstractRequestCli.dart';
-import 'data/request/ConfigureConnectionRequestCli.dart';
 import 'data/request/OperationRequestCli.dart';
 import 'data/response/ResponseCli.dart';
-import 'data/response/ServerConfirmReceiptCli.dart';
 
 typedef void OnResponseCallback(ResponseCli response);
 

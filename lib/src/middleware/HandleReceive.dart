@@ -1,13 +1,10 @@
-import 'dart:convert';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/Middleware.dart';
-import 'package:askless/src/middleware/data/connection/PingPong.dart';
 import 'package:askless/src/middleware/data/response/AbstractServerData.dart';
 import 'package:askless/src/middleware/data/response/NewRealtimeData.dart';
 import 'package:askless/src/middleware/data/response/ResponseCli.dart';
 import 'package:askless/src/middleware/data/response/ConfigureConnectionResponseCli.dart';
 
-import 'data/request/OperationRequestCli.dart';
 import 'data/response/ServerConfirmReceiptCli.dart';
 
 
@@ -21,7 +18,7 @@ class LastServerMessage{
 
 class HandleReceive{
   final Middleware middleware;
-  final lastMessagesFromServer = List<LastServerMessage>();
+  final lastMessagesFromServer = [];
 
   HandleReceive(this.middleware);
 

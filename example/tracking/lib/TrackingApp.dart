@@ -1,9 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:askless/askless.dart';
 
-import 'main.dart';
 
 class TrackingApp extends StatelessWidget {
 
@@ -49,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
               SizedBox(height: 100,),
 
-              RaisedButton(
+              ElevatedButton(
                 child: Text("I'm waiting", style: _textStyle,),
                 onPressed: (){
                   AsklessClient.instance

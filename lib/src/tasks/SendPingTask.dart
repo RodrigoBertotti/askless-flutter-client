@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:askless/src/middleware/data/connection/PingPong.dart';
 import 'package:askless/src/middleware/data/response/ConfigureConnectionResponseCli.dart';
 import 'package:askless/src/tasks/TimedTask.dart';

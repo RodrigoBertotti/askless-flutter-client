@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:askless/askless.dart';
 
 class MessageWidgetOfMyself extends StatelessWidget {
   final String text;

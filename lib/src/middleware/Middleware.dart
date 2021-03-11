@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:askless/askless.dart';
 import 'package:random_string/random_string.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/status.dart' as status;
 import 'package:askless/src/middleware/HandleReceive.dart';
 import 'package:askless/src/middleware/SendData.dart';
 import 'package:askless/src/middleware/data/request/ClientConfirmReceiptCli.dart';
@@ -14,7 +13,6 @@ import 'package:askless/src/middleware/data/request/ConfigureConnectionRequestCl
 import 'package:askless/src/middleware/data/response/NewRealtimeData.dart';
 import 'package:askless/src/middleware/data/response/RespondError.dart';
 import 'package:askless/src/middleware/data/response/ResponseCli.dart';
-import 'package:askless/src/tasks/SendPingTask.dart';
 import '../index.dart';
 import '../constants.dart';
 import 'data/request/AbstractRequestCli.dart';
@@ -298,8 +296,7 @@ class Middleware {
 
       listenId = LISTEN_PREFIX +
           listenCli.clientRequestId.substring(REQUEST_PREFIX.length);
-      final streamController = new StreamController<
-          NewDataForListener>.broadcast(); // ignore: close_sinks
+      final streamController = new StreamController<NewDataForListener>.broadcast(); // ignore: close_sinks
       final listen = new ClientListeningToRoute(
           route: listenCli.route,
           query: listenCli.query,

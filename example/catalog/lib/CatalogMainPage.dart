@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:askless/askless.dart';
 import 'Product.dart';
-import 'main.dart';
 
 
 class CatalogMainPage extends StatefulWidget {
@@ -233,7 +232,6 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                         }
                     );
                   },
-                  query: {'search': search},
                 ),
                 SizedBox(
                   height: 20,
@@ -307,7 +305,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                         SizedBox(
                           width: 10,
                         ),
-                        FlatButton.icon(
+                        TextButton.icon(
                             icon: Icon(Icons.add),
                             label: Text('ADD'),
                             onPressed: () async {
@@ -392,8 +390,8 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
       {@required String token, @required int ownClientId, bool wrongToken = false}) {
 
     return Container(
-      width: 300,
-      child: RaisedButton(
+        width: 300,
+        child: ElevatedButton(
           child: Text(
             (wrongToken ? 'WRONG token - ' : '') + 'Connect as admin, headers { Authorization: ' +
                 token.toString() +
@@ -407,8 +405,12 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
               this.connectAsAdmin(ownClientId: ownClientId, token: token, onDisconnect: null);
             });
           },
-          color: getConnectionColor(token, _connection),
-      )
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                  getConnectionColor(token, _connection)
+              )
+          ),
+        )
     );
   }
 
