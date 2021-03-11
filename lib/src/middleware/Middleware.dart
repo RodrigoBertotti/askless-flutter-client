@@ -279,9 +279,10 @@ class Middleware {
             alreadyListening.streamController
                 .add(alreadyListening.lastReceivementFromServer);
         } catch (e) {
-          if (!e.toString().contains(
-              'Bad state: Cannot add new events after calling notifyMotherStreamThatChildStreamIsNotListeningAnymore')) {
+          if (!e.toString().contains('Bad state: Cannot add new events after calling close')) {
             throw e;
+          }else{
+            Internal.instance.logger(message: e.toString(), level: Level.debug);
           }
         }
       });
@@ -315,7 +316,7 @@ class Middleware {
               additionalData: response.error.stack,
               level: Level.error);
         } else {
-          Internal.instance.logger(message: 'now is listening!');
+          Internal.instance.logger(message: 'now is listening to '+listenId+'!');
         }
       });
       streamController.onCancel = () {
