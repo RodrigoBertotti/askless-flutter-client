@@ -46,7 +46,11 @@ an example is executed locally.
 1 - First create the server, [click here](https://github.com/WiseTap/askless) and
 follow the server instructions in the section "Getting Started"
 
-2 - Install
+2 - To use an encrypted connection on a **test environment** such as this example
+(`ws://` connection instead of `wss://`) [follow these instructions](https://flutter.dev/docs/release/breaking-changes/network-policy-ios-android).
+Do not apply this on a production environment
+
+3 - Install
 
 pubspec.yaml:
 
@@ -57,16 +61,16 @@ pubspec.yaml:
       # Add this line:
       askless: ^1.0.0
 
-3 - Import the package
+4 - Import the package
 
     import 'package:askless/askless.dart';
 
-4 - Initialize
+5 - Initialize
 informing the server url with port (default: 3000).
 On the server side you can access the `myAsklessServer.localUrl` attribute
 to discover.
 
-5 - Perform the connection with `Askless.instance.connect()`
+6 - Perform the connection with `Askless.instance.connect()`
     
 Example:
 
@@ -77,7 +81,7 @@ Example:
     }    
 
 
-6 - Copy and paste this template into `build`
+7 - Copy and paste this template into `build`
 
     @override
     Widget build(BuildContext context) {
@@ -102,7 +106,7 @@ Example:
       );
     }
 
-7 - Replace `FIRST TODO` by a widget that listen in realtime
+8 - Replace `FIRST TODO` by a widget that listen in realtime
 a route in the server
  
     Askless.instance
@@ -115,7 +119,7 @@ a route in the server
             }
         ),
 
-8 - Replace `SECOND TODO` by a button that send data
+ Replace `SECOND TODO` by a button that send data
  to a route in the server
  
     ElevatedButton(

@@ -46,7 +46,11 @@ um exemplo é executado localmente.
 1 - Primeiramente crie o servidor,  [clique aqui](https://github.com/WiseTap/askless/blob/master/README_PORTUGUES.md) e
 siga as instruções do servidor na seção "Começando"
 
-2 - Realize a instalação
+2 - Para utilizar uma conexão sem criptografia em um **ambiente de teste** tal como esse exemplo
+(conexão `ws://` em vez de `wss://`) [siga essas instuções](https://flutter.dev/docs/release/breaking-changes/network-policy-ios-android).
+Não aplique isso em um ambiente de produção
+
+3 - Realize a instalação
 
 pubspec.yaml:
 
@@ -57,14 +61,14 @@ pubspec.yaml:
       # Adicione essa linha:
       askless: ^1.0.0
 
-3 -  Importe
+4 -  Importe
 
     import 'package:askless/askless.dart';
 
-4 - Inicialize o servidor com `Askless.instance.init(serverUrl:"ws://<IPV4>:<PORT>")` 
+5 - Inicialize o servidor com `Askless.instance.init(serverUrl:"ws://<IPV4>:<PORT>")` 
 informando o endereço IPv4 da rede local obtido e a porta (padrão: 3000).
 
-5 - Realize a conexão com o servidor com `Askless.instance.connect()`
+6 - Realize a conexão com o servidor com `Askless.instance.connect()`
     
 Exemplo:
 
@@ -74,7 +78,7 @@ Exemplo:
       runApp(TrackingApp());
     }    
 
-6 - Copie e cole esse template dentro de `build`
+7 - Copie e cole esse template dentro de `build`
 
     @override
     Widget build(BuildContext context) {
@@ -99,7 +103,7 @@ Exemplo:
       );
     }
 
-7 - Substitua `FIRST TODO` por um widget que realiza a leitura em tempo real
+8 - Substitua `FIRST TODO` por um widget que realiza a leitura em tempo real
  de uma rota do servidor
  
     Askless.instance
@@ -112,7 +116,7 @@ Exemplo:
             }
         ),
 
-8 - Substitua `SECOND TODO` por um botão que realiza o envio de dados para
+ Substitua `SECOND TODO` por um botão que realiza o envio de dados para
  uma rota do servidor
  
     ElevatedButton(
