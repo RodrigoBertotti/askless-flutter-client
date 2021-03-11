@@ -500,7 +500,7 @@ class AsklessClient {
 
     return StreamBuilder(
       builder: builder,
-      key: key,
+      key: key ?? new GlobalKey(),
       initialData: initialData,
       stream: ctrlForStreamBuilder.stream,
     );
