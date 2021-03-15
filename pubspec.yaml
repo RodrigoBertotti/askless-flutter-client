@@ -1,7 +1,7 @@
 name: askless
 description: Flutter client of Askless framework, which facilitates building realtime servers for JavaScript and Flutter Apps
 
-version: 1.0.0 # TODO onupdate:
+version: 1.0.1 # TODO onupdate:
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

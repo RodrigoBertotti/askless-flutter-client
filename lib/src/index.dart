@@ -432,7 +432,7 @@ class AsklessClient {
         clientRequestId: null, //TODO: usar clientRequestId real
         output: initialData
       ),
-      key: key,
+      key: key ?? new GlobalKey(),
     );
   }
 

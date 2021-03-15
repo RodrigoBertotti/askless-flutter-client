@@ -59,9 +59,10 @@ pubspec.yaml:
         sdk: flutter
         
       # Adicione essa linha:
-      askless: ^1.0.0
+      <!--- TODO onupdate: -->
+      askless: ^1.0.1
 
-4 -  Importe
+4 - Importe
 
     import 'package:askless/askless.dart';
 

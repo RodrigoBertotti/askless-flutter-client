@@ -59,7 +59,8 @@ pubspec.yaml:
         sdk: flutter
         
       # Add this line:
-      askless: ^1.0.0
+      <!--- TODO onupdate: -->
+      askless: ^1.0.1
 
 4 - Import the package
 
