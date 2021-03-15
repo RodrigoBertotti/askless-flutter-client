@@ -6,6 +6,7 @@ import 'package:synchronized/synchronized.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/Middleware.dart';
 import 'package:askless/src/middleware/data/response/RespondError.dart';
+import '../constants.dart';
 import 'data/request/AbstractRequestCli.dart';
 import 'data/request/OperationRequestCli.dart';
 import 'data/response/ResponseCli.dart';
@@ -28,9 +29,19 @@ class SendClientData {
 
   SendClientData(this.middleware);
 
+  removePendingRequests({String whereRequestType}){
+    List.from(_pendingRequestsList.where((req) => whereRequestType == null || whereRequestType.length==0 || req.data.requestType == whereRequestType))
+        .forEach((req) {
+      _lockPendingRequestsList.synchronized(() async {
+        _pendingRequestsList.remove(req);
+      });
+    });
+  }
+  
 
   void clear() {
     this._pendingRequestsList.clear();
+    this.removePendingRequests();
   }
 
   void notifyServerResponse(ResponseCli response) {
@@ -89,7 +100,8 @@ class SendClientData {
         _lockPendingRequestsList.synchronized(() async {
           final remove = _pendingRequestsList.firstWhere(
               (p) => p.data.clientRequestId == request.data.clientRequestId,
-              orElse: () => null);
+              orElse: () => null
+          );
           if (remove != null) {
             _pendingRequestsList.remove(remove);
             request.onResponse(new ResponseCli(

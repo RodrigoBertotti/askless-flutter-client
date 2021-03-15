@@ -13,8 +13,10 @@ import 'package:askless/src/middleware/data/request/ConfigureConnectionRequestCl
 import 'package:askless/src/middleware/data/response/NewRealtimeData.dart';
 import 'package:askless/src/middleware/data/response/RespondError.dart';
 import 'package:askless/src/middleware/data/response/ResponseCli.dart';
+import '../constants.dart';
 import '../index.dart';
 import '../constants.dart';
+import '../index.dart';
 import 'data/request/AbstractRequestCli.dart';
 import 'data/response/ConfigureConnectionResponseCli.dart';
 
@@ -97,6 +99,7 @@ class Middleware {
         new ConnectionConfiguration(); //restaurando isFromServer para false, pois quando se perde  é mantido o connectionConfiguration da conexão atual
 
     ResponseCli response;
+    bool tryAgain;
     do {
       Internal.instance.logger(message: "middleware: connect");
 
@@ -164,7 +167,12 @@ class Middleware {
                     ? DisconnectionReason.TOKEN_INVALID
                     : null);
       }
-    } while (response.error != null && response.error.code == ReqErrorCode.TIMEOUT);
+      tryAgain = response.error?.code == ReqErrorCode.TIMEOUT;
+      if(tryAgain){
+        this.close();
+        Internal.instance.middleware?.sendClientData?.removePendingRequests(whereRequestType: RequestType.CONFIGURE_CONNECTION);
+      }
+    } while (tryAgain);
 
     return response;
   }

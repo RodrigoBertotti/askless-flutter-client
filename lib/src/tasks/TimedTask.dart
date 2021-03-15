@@ -34,7 +34,7 @@ abstract class TimedTask{
       }
       runTask = true;
 
-      while(runTask){
+      while (runTask){
         run();
         final lastIntervalInSeconds = intervalInSeconds;
         await Future.delayed(Duration(seconds: _intervalInSeconds));
