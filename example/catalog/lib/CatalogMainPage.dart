@@ -125,6 +125,69 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
     super.dispose();
   }
 
+  Widget buildListenToProducts({@required String route}) {
+    return AsklessClient.instance.listenAndBuild(
+      route: route,
+      query: {'search': search},
+      builder: (context, snapshots) {
+        if (snapshots.error != null) {
+          return Center(
+            child: Text(
+              'listenAndBuild error: ' + snapshots.error.toString(),
+              style: TextStyle(color: Colors.red),
+            ),
+          );
+        }
+        final products = Product.fromMapList(snapshots.data);
+
+        return FutureBuilder<Color>(
+            initialData: Colors.black,
+            key: new GlobalKey(),
+            future: Future.delayed(Duration(milliseconds: 750,)).then((_) => Colors.black45),
+            builder: (context, snapshot) {
+              if (products.length == 0) {
+                return Container(
+                  height: 100,
+                  child: Center(
+                    child: _connection == Connection.DISCONNECTED && AsklessClient.instance.disconnectReason==DisconnectionReason.TOKEN_INVALID ? Text(
+                      'Your token is invalid!',
+                      style: TextStyle(color: Colors.red),
+                    ) : Text(
+                      'No registered products',
+                      style: TextStyle(color: snapshot.data),
+                    ),
+                  ),
+                );
+              }
+
+              return Column(
+                children: products
+                    .map((product) => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Icon(Icons.remove, color: snapshot.data,),
+                      onTap: () => removeProduct(id: product.id),
+                    ),
+                    Container(
+                      width: 300,
+                      child: Center(
+                        child: Text(
+                          '\$${product.price} - ${product.name}',
+                          style: TextStyle(color: snapshot.data),
+                        ),
+                      ),
+                    )
+                  ],
+                ))
+                    .toList(),
+              );
+            }
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,69 +233,32 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                   height: 10,
                 ),
                 _buildConnectAsAdmin(ownClientId: -1, token: 'Bearer wrong', wrongToken: true),
-                SizedBox(
-                  height: 10,
-                ),
-                AsklessClient.instance.listenAndBuild(
-                  route: 'product/all',
-                  query: {'search': search},
-                  builder: (context, snapshots) {
-                    if (snapshots.error != null) {
-                      return Center(
-                        child: Text(
-                          'listenAndBuild error: ' + snapshots.error.toString(),
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      );
-                    }
-                    final products = Product.fromMapList(snapshots.data);
 
-                    return FutureBuilder<Color>(
-                        initialData: Colors.black,
-                        key: new GlobalKey(),
-                        future: Future.delayed(Duration(milliseconds: 750,)).then((_) => Colors.black45),
-                        builder: (context, snapshot) {
-                          if (products.length == 0) {
-                            return Container(
-                              height: 100,
-                              child: Center(
-                                child: _connection == Connection.DISCONNECTED && AsklessClient.instance.disconnectReason==DisconnectionReason.TOKEN_INVALID ? Text(
-                                  'Your token is invalid!',
-                                  style: TextStyle(color: Colors.red),
-                                ) : Text(
-                                  'No registered products',
-                                  style: TextStyle(color: snapshot.data),
-                                ),
-                              ),
-                            );
-                          }
 
-                          return Column(
-                            children: products
-                                .map((product) => Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                GestureDetector(
-                                  child: Icon(Icons.remove, color: snapshot.data,),
-                                  onTap: () => removeProduct(id: product.id),
-                                ),
-                                Container(
-                                  width: 300,
-                                  child: Center(
-                                    child: Text(
-                                      '\$${product.price} - ${product.name}',
-                                      style: TextStyle(color: snapshot.data),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ))
-                                .toList(),
-                          );
-                        }
-                    );
-                  },
+
+
+              Padding(
+                child: buildListenToProducts(route: 'product/all'),
+                padding: EdgeInsets.only(top: 10),
+              ),
+
+                Padding(
+                  child: Column(
+                    children: [
+                      buildListenToProducts(route: 'product/all')
+                    ],
+                  ),
+                  padding: EdgeInsets.only(top: 10),
                 ),
+
+                Padding(
+                  child: buildListenToProducts(route: 'product/all/reversed'),
+                  padding: EdgeInsets.only(top: 10),
+                ),
+
+                SizedBox(height: 20,),
+
+
                 SizedBox(
                   height: 20,
                 ),
@@ -393,7 +419,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
         width: 300,
         child: ElevatedButton(
           child: Text(
-            (wrongToken ? 'WRONG token - ' : '') + 'Connect as admin, headers { Authorization: ' +
+            (wrongToken ? 'WRONG token -' : 'Connect as admin,') + ' headers { Authorization: ' +
                 token.toString() +
                 ', ownClientId: ' +
                 ownClientId.toString() +
