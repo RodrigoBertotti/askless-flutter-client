@@ -6,11 +6,11 @@ version: 1.0.1 # TODO onupdate:
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
-homepage: https://github.com/WiseTap/askless-flutter-client
+homepage: https://github.com/WiseTap/askless-flutter-client/tree/dev/
 
-repository: https://github.com/WiseTap/askless-flutter-client
+repository: https://github.com/WiseTap/askless-flutter-client/tree/dev/
 
-documentation: https://github.com/WiseTap/askless-flutter-client/blob/master/documentation/english_documentation.md
+documentation: https://github.com/WiseTap/askless-flutter-client/blob/dev/documentation/english_documentation.md
 
 issue_tracker: https://github.com/WiseTap/askless-flutter-client/issues
 
