@@ -1,26 +1,32 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:askless/askless.dart';
 import 'package:random_string/random_string.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:askless/src/middleware/HandleReceive.dart';
 import 'package:askless/src/middleware/SendData.dart';
 import 'package:askless/src/middleware/data/request/ClientConfirmReceiptCli.dart';
 import 'package:askless/src/middleware/data/request/OperationRequestCli.dart';
 import 'package:askless/src/middleware/data/request/ConfigureConnectionRequestCli.dart';
-import 'package:askless/src/middleware/data/response/NewRealtimeData.dart';
-import 'package:askless/src/middleware/data/response/RespondError.dart';
-import 'package:askless/src/middleware/data/response/ResponseCli.dart';
+import 'package:askless/src/middleware/data/receivements/NewRealtimeData.dart';
+import 'package:askless/src/middleware/data/receivements/RespondError.dart';
+import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 import '../constants.dart';
 import '../index.dart';
 import '../constants.dart';
 import '../index.dart';
 import 'data/request/AbstractRequestCli.dart';
-import 'data/response/ConfigureConnectionResponseCli.dart';
+import 'data/receivements/ConfigureConnectionResponseCli.dart';
+import 'receivements/ClientReceived.dart';
 
 final _headerClientId = 'client_id';
+class LastServerMessage{
+  int messageReceivedAtSinceEpoch = DateTime.now().microsecondsSinceEpoch;
+
+  final String serverId;
+
+  LastServerMessage(this.serverId);
+}
 
 class ClientListeningToRoute {
   final String route;
@@ -46,16 +52,15 @@ class Middleware {
   IOWebSocketChannel channel;
   int _lastPongFromServer;
   SendClientData sendClientData;
-  HandleReceive handleReceive;
-  ConnectionConfiguration connectionConfiguration =
-      new ConnectionConfiguration();
+  ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
+  final lastMessagesFromServer = [];
+
   static String
       CLIENT_GENERATED_ID; // 1 por pessoa, dessa maneira a pessoa ainda pode obter a resposta caso desconectar e conectar novamente
   final List<ClientListeningToRoute> listeningTo = [];
   VoidCallback _disconnectAndClearOnDone = () {};
 
   Middleware(this.serverUrl) {
-    this.handleReceive = new HandleReceive(this);
     sendClientData = new SendClientData(this);
   }
 
@@ -110,42 +115,15 @@ class Middleware {
       channel.stream.listen((data) {
         _lastPongFromServer = DateTime.now().millisecondsSinceEpoch;
 
-        if (data == 'pong' || data == 'welcome') return;
+        ClientReceived.from(data).handle();
 
-        final receivedData = jsonDecode(data);
-        handleReceive.handle(receivedData);
       }, onError: (err) {
-        Internal.instance.logger(
-            message: "middleware: channel.stream.listen onError",
-            level: Level.error,
-            additionalData: err.toString());
-      }, onDone: () {
-        Internal.instance.logger(message: "channel.stream.listen onDone");
-        Future.delayed(Duration(seconds: 2), () {
-          this._disconnectAndClearOnDone();
-          this._disconnectAndClearOnDone = () {};
-
-          if (Internal.instance.disconnectionReason != DisconnectionReason.TOKEN_INVALID &&
-              Internal.instance.disconnectionReason != DisconnectionReason.DISCONNECTED_BY_CLIENT &&
-              Internal.instance.disconnectionReason != DisconnectionReason.VERSION_CODE_NOT_SUPPORTED &&
-              Internal.instance.disconnectionReason != DisconnectionReason.WRONG_PROJECT_NAME
-          ) {
-            if (Internal.instance.disconnectionReason == null) {
-              Internal.instance.disconnectionReason = DisconnectionReason.UNDEFINED;
-            }
-
-            if(AsklessClient.instance.connection == Connection.DISCONNECTED){
-              AsklessClient.instance.reconnect();
-            }
-          }
-        });
-      });
+        Internal.instance.logger(message: "middleware: channel.stream.listen onError", level: Level.error, additionalData: err.toString());
+      }, onDone: () =>  _handleConnectionClosed(Duration(seconds: 2))
+      );
 
       channel.stream.handleError((err) {
-        Internal.instance.logger(
-            message: "channel handleError",
-            additionalData: err,
-            level: Level.error);
+        Internal.instance.logger(message: "channel handleError", additionalData: err, level: Level.error);
       });
 
       response = await sendClientData.send(
@@ -177,66 +155,7 @@ class Middleware {
     return response;
   }
 
-  void connectionReady(
-      ConnectionConfiguration connectionConfiguration, RespondError error) {
-    Internal.instance.logger(message: 'connectionReady');
 
-    if (connectionConfiguration != null) {
-      this.connectionConfiguration = connectionConfiguration;
-    } else {
-      throw ("connectionConfiguration is null");
-    }
-
-    //print('-------------------');
-    //(connectionConfiguration.clientVersionCodeSupported.lessThanOrEqual);
-    //print(CLIENT_LIBRARY_VERSION_CODE);
-    //print('-------------------');
-
-    if ((connectionConfiguration.clientVersionCodeSupported.moreThanOrEqual !=
-                null &&
-            CLIENT_LIBRARY_VERSION_CODE <
-                connectionConfiguration
-                    .clientVersionCodeSupported.moreThanOrEqual) ||
-        (connectionConfiguration.clientVersionCodeSupported.lessThanOrEqual !=
-                null &&
-            CLIENT_LIBRARY_VERSION_CODE >
-                connectionConfiguration
-                    .clientVersionCodeSupported.lessThanOrEqual)) {
-      this.disconnectAndClear();
-      Internal.instance.disconnectionReason = DisconnectionReason.VERSION_CODE_NOT_SUPPORTED;
-      throw "Check if you server and client are updated! Your Askless version on server is ${connectionConfiguration.serverVersion}. Your Askless client version is ${CLIENT_LIBRARY_VERSION_NAME}";
-    }
-
-    if (AsklessClient.instance.projectName != null &&
-        connectionConfiguration.projectName != null &&
-        AsklessClient.instance.projectName !=
-            connectionConfiguration.projectName) {
-      this.disconnectAndClear();
-      Internal.instance.disconnectionReason = DisconnectionReason.WRONG_PROJECT_NAME;
-      throw "Looks like you are not running the right server (" +
-          connectionConfiguration.projectName +
-          ") to your Flutter Client project (" +
-          AsklessClient.instance.projectName +
-          ")";
-    }
-//    print("------------------------------------------");
-//    print(Askless.instance.projectName);
-//    print(connectionConfiguration.projectName);
-
-    Internal.instance.sendPingTask
-        .changeInterval(connectionConfiguration.intervalInSecondsClientPing);
-    Internal.instance.reconnectWhenDidNotReceivePongFromServerTask
-        .changeInterval(connectionConfiguration
-            .reconnectClientAfterSecondsWithoutServerPong);
-
-    Internal.instance
-        .notifyConnectionChanged(Connection.CONNECTED_WITH_SUCCESS);
-
-    Future.delayed(Duration(seconds: 1), (){
-      Internal.instance.sendMessageToServerAgainTask.changeInterval(
-          connectionConfiguration.intervalInSecondsClientSendSameMessage);
-    });
-  }
 
   void disconnectAndClear({VoidCallback onDone}) {
     if (onDone != null) this._disconnectAndClearOnDone = onDone;
@@ -338,18 +257,11 @@ class Middleware {
       };
 
       return new Listening(streamController.stream, listen.clientRequestId,
-          listenId, notifyMotherStreamThatChildStreamIsNotListeningAnymore);
+          listenId, notifyMotherStreamThatChildStreamIsNotListeningAnymore
+      );
     }
   }
 
-  void onNewData(NewDataForListener message) {
-    final sub = listeningTo.firstWhere((s) => s.listenId == message.listenId,
-        orElse: () => null);
-    if (sub != null) {
-      sub.streamController?.add(message);
-      sub.lastReceivementFromServer = message;
-    }
-  }
 
   void stopListening({@required String listenId}) {
     Internal.instance.logger(
@@ -367,16 +279,28 @@ class Middleware {
     }
   }
 
-  void confirmReceiptToServer(String serverId) {
-    Internal.instance.logger(message: "confirmReceiptToServer " + serverId);
 
-    if(this.channel==null){
-      Internal.instance
-          .logger(message: "this.channel==null", level: Level.error);
-    }
-    else if (this.channel.sink == null)
-      Internal.instance
-          .logger(message: "this.channel.sink==null", level: Level.error);
-    this.channel?.sink?.add(jsonEncode(new ClientConfirmReceiptCli(serverId).toMap()));
+
+  void _handleConnectionClosed(Duration delay) {
+    Internal.instance.logger(message: "channel.stream.listen onDone");
+
+    Future.delayed(delay, () {
+      this._disconnectAndClearOnDone();
+      this._disconnectAndClearOnDone = () {};
+
+      if (Internal.instance.disconnectionReason != DisconnectionReason.TOKEN_INVALID &&
+          Internal.instance.disconnectionReason != DisconnectionReason.DISCONNECTED_BY_CLIENT &&
+          Internal.instance.disconnectionReason != DisconnectionReason.VERSION_CODE_NOT_SUPPORTED &&
+          Internal.instance.disconnectionReason != DisconnectionReason.WRONG_PROJECT_NAME
+      ) {
+        if (Internal.instance.disconnectionReason == null) {
+          Internal.instance.disconnectionReason = DisconnectionReason.UNDEFINED;
+        }
+
+        if(AsklessClient.instance.connection == Connection.DISCONNECTED){
+          AsklessClient.instance.reconnect();
+        }
+      }
+    });
   }
 }

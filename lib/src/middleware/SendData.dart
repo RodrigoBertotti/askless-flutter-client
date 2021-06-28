@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:askless/src/index.dart';
-import 'package:askless/src/middleware/Middleware.dart';
-import 'package:askless/src/middleware/data/response/RespondError.dart';
+import 'package:askless/src/middleware/index.dart';
+import 'package:askless/src/middleware/data/receivements/RespondError.dart';
 import '../constants.dart';
 import 'data/request/AbstractRequestCli.dart';
 import 'data/request/OperationRequestCli.dart';
-import 'data/response/ResponseCli.dart';
+import 'data/receivements/ResponseCli.dart';
 
 typedef void OnResponseCallback(ResponseCli response);
 
@@ -21,6 +21,7 @@ class _Request {
   _Request(this.data, this.onResponse);
 }
 
+_Request newTestRequest(AbstractRequestCli data, OnResponseCallback onResponse) => _Request(data, onResponse);
 
 class SendClientData {
   final List<_Request> _pendingRequestsList = [];
@@ -37,7 +38,10 @@ class SendClientData {
       });
     });
   }
-  
+
+  List<_Request> get testGetPendingRequestsList => _pendingRequestsList;
+
+  void testAddPendingRequests(_Request request) => _pendingRequestsList.add(request);
 
   void clear() {
     this._pendingRequestsList.clear();
@@ -50,8 +54,8 @@ class SendClientData {
           (p) => p.data.clientRequestId == response.clientRequestId,
           orElse: () => null);
       if (req != null) {
-        req.onResponse(response);
         _pendingRequestsList.remove(req);
+        req.onResponse(response);
       } else {
         Internal.instance.logger(message: "Response received, but did nothing, probably because the request timed out before", level: Level.debug);
       }

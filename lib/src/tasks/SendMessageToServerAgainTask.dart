@@ -1,5 +1,5 @@
 import 'package:askless/src/index.dart';
-import 'package:askless/src/middleware/data/response/ConfigureConnectionResponseCli.dart';
+import 'package:askless/src/middleware/data/receivements/ConfigureConnectionResponseCli.dart';
 import 'package:askless/src/tasks/TimedTask.dart';
 
 class SendMessageToServerAgainTask extends TimedTask{

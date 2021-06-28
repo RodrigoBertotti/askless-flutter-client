@@ -17,7 +17,7 @@ abstract class TimedTask{
     this._intervalInSeconds = intervalInSeconds;
   }
 
-  get intervalInSeconds => _intervalInSeconds;
+  int get intervalInSeconds => _intervalInSeconds;
 
   void run();
 

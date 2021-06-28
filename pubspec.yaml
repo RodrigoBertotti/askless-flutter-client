@@ -22,6 +22,8 @@ dependencies:
   connectivity: ^3.0.2
   web_socket_channel: ^2.0.0
 
+dev_dependencies:
+  test: ^1.17.8
 
 #dev_dependencies:
 #  flutter_test:

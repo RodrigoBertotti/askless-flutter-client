@@ -1,4 +1,4 @@
-import 'package:askless/src/middleware/data/response/ResponseCli.dart';
+import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 
 class ServerConfirmReceiptCli extends ResponseCli{
   static final typeResponse = '_class_type_serverconfirmreceipt';

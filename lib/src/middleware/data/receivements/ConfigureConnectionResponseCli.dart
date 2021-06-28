@@ -1,4 +1,4 @@
-import 'package:askless/src/middleware/data/response/ResponseCli.dart';
+import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 
 class ConfigureConnectionResponseCli extends ResponseCli{
   static final typeResponse = '_class_type_configureconnection';
@@ -12,18 +12,29 @@ class ConfigureConnectionResponseCli extends ResponseCli{
 }
 
 class ConnectionConfiguration{
-  int intervalInSecondsServerSendSameMessage = 5;
-  int intervalInSecondsClientSendSameMessage = 5;
-  int intervalInSecondsClientPing = 5;
-  int reconnectClientAfterSecondsWithoutServerPong = 10;
-  int disconnectClientAfterSecondsWithoutClientPing = 38;
+  int intervalInSecondsServerSendSameMessage;
+  int intervalInSecondsClientSendSameMessage;
+  int intervalInSecondsClientPing;
+  int reconnectClientAfterSecondsWithoutServerPong;
+  int disconnectClientAfterSecondsWithoutClientPing;
   String serverVersion;
   ClientVersionCodeSupported clientVersionCodeSupported;
   bool isFromServer = false;
   String projectName;
-  int requestTimeoutInSeconds = 15;
+  int requestTimeoutInSeconds;
 
-  ConnectionConfiguration();
+  ConnectionConfiguration({
+    this.clientVersionCodeSupported,
+    this.disconnectClientAfterSecondsWithoutClientPing:38,
+    this.intervalInSecondsClientPing:5,
+    this.intervalInSecondsClientSendSameMessage:5,
+    this.intervalInSecondsServerSendSameMessage:5,
+    this.isFromServer,
+    this.projectName,
+    this.reconnectClientAfterSecondsWithoutServerPong:10,
+    this.requestTimeoutInSeconds:15,
+    this.serverVersion
+  });
 
   ConnectionConfiguration.fromMap(map){
     this.intervalInSecondsServerSendSameMessage = map['intervalInSecondsServerSendSameMessage'];
@@ -45,6 +56,8 @@ class ClientVersionCodeSupported{
 
   int lessThanOrEqual;
   int moreThanOrEqual;
+
+  ClientVersionCodeSupported({this.lessThanOrEqual, this.moreThanOrEqual});
 
   ClientVersionCodeSupported.fromMap(map){
     lessThanOrEqual = map['lessThanOrEqual'];

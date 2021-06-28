@@ -1,6 +1,6 @@
 
 
-import 'package:askless/src/middleware/data/response/ConfigureConnectionResponseCli.dart';
+import 'package:askless/src/middleware/data/receivements/ConfigureConnectionResponseCli.dart';
 
 
 import '../index.dart';

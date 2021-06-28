@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:askless/src/middleware/data/connection/PingPong.dart';
-import 'package:askless/src/middleware/data/response/ConfigureConnectionResponseCli.dart';
+import 'package:askless/src/middleware/data/receivements/ConfigureConnectionResponseCli.dart';
 import 'package:askless/src/tasks/TimedTask.dart';
 
 import '../index.dart';

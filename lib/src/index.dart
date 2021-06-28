@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:askless/src/tasks/ReconnectClientWhenDidNotReceivePongFromServerTask.dart';
 import 'package:askless/src/middleware/data/request/OperationRequestCli.dart';
-import 'package:askless/src/middleware/data/response/NewRealtimeData.dart';
-import 'package:askless/src/middleware/data/response/ResponseCli.dart';
+import 'package:askless/src/middleware/data/receivements/NewRealtimeData.dart';
+import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 import 'package:askless/src/tasks/SendMessageToServerAgainTask.dart';
 import 'package:askless/src/tasks/SendPingTask.dart';
 import '../askless.dart';
 import 'constants.dart';
-import 'middleware/Middleware.dart';
+import 'middleware/index.dart';
 import 'tasks/ReconnectWhenOffline.dart';
 
 enum DisconnectionReason{
