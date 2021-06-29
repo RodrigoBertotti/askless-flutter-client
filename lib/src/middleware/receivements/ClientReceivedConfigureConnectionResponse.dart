@@ -42,25 +42,13 @@ class ClientReceivedConfigureConnectionResponse extends ClientReceived{
 
 
   checkIfIsNeededToStopConnectionFromBeingEstablished(ConnectionConfiguration connectionConfiguration) {
-    if ((connectionConfiguration.clientVersionCodeSupported.moreThanOrEqual !=
-        null &&
-        CLIENT_LIBRARY_VERSION_CODE <
-            connectionConfiguration
-                .clientVersionCodeSupported.moreThanOrEqual) ||
-        (connectionConfiguration.clientVersionCodeSupported.lessThanOrEqual !=
-            null &&
-            CLIENT_LIBRARY_VERSION_CODE >
-                connectionConfiguration
-                    .clientVersionCodeSupported.lessThanOrEqual)) {
+    if (connectionConfiguration.incompatibleVersion) {
       Internal.instance.middleware.disconnectAndClear();
       Internal.instance.disconnectionReason = DisconnectionReason.VERSION_CODE_NOT_SUPPORTED;
       throw "Check if you server and client are updated! Your Askless version on server is ${connectionConfiguration.serverVersion}. Your Askless client version is ${CLIENT_LIBRARY_VERSION_NAME}";
     }
 
-    if (AsklessClient.instance.projectName != null &&
-        connectionConfiguration.projectName != null &&
-        AsklessClient.instance.projectName !=
-            connectionConfiguration.projectName) {
+    if (connectionConfiguration.differentProjectName) {
       Internal.instance.middleware.disconnectAndClear();
       Internal.instance.disconnectionReason = DisconnectionReason.WRONG_PROJECT_NAME;
       throw "Looks like you are not running the right server (" +

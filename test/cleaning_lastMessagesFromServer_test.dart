@@ -33,10 +33,10 @@ void setLastMessagesFromServer(int shouldKeep, int shouldRemove){
     final lastServerMessage = new LastServerMessage('server_id'+(shouldKeep + shouldRemove).toString());
     if(shouldKeep > 0){
       shouldKeep--;
-      lastServerMessage.messageReceivedAtSinceEpoch = (DateTime.now().millisecondsSinceEpoch - ClientReceived.keepLastMessagesFromServerWithinMs * new Random().nextInt(100)/100).toInt();
+      lastServerMessage.messageReceivedAtSinceEpoch = (DateTime.now().millisecondsSinceEpoch - keepLastMessagesFromServerWithinMs * new Random().nextInt(100)/100).toInt();
     }else if(shouldRemove > 0){
       shouldRemove--;
-      lastServerMessage.messageReceivedAtSinceEpoch = (DateTime.now().millisecondsSinceEpoch - ClientReceived.keepLastMessagesFromServerWithinMs * (1.1 + new Random().nextInt(100)/100)).toInt();
+      lastServerMessage.messageReceivedAtSinceEpoch = (DateTime.now().millisecondsSinceEpoch - keepLastMessagesFromServerWithinMs * (1.1 + new Random().nextInt(100)/100)).toInt();
     }else{
       break;
     }

@@ -1,6 +1,8 @@
 
 
 
+import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:askless/src/middleware/data/request/AbstractRequestCli.dart';
 
@@ -102,5 +104,13 @@ class ListenCli extends AbstractRequestCli{
     map['query'] = query;
     map[jsonListenId] = listenId;
     return map;
+  }
+
+  String get hash {
+    dynamic hash = toMap();
+    hash.remove(AbstractRequestCli.jsonClientRequestId);
+    hash.remove(ListenCli.jsonListenId);
+    hash = jsonEncode(hash);
+    return hash;
   }
 }

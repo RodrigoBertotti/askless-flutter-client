@@ -19,13 +19,16 @@ import 'data/request/AbstractRequestCli.dart';
 import 'data/receivements/ConfigureConnectionResponseCli.dart';
 import 'receivements/ClientReceived.dart';
 
-final _headerClientId = 'client_id';
+int get keepLastMessagesFromServerWithinMs => 10 * 60 * 1000;
+
 class LastServerMessage{
-  int messageReceivedAtSinceEpoch = DateTime.now().microsecondsSinceEpoch;
+  int messageReceivedAtSinceEpoch = DateTime.now().millisecondsSinceEpoch;
 
   final String serverId;
 
   LastServerMessage(this.serverId);
+
+  bool get shouldBeRemoved => messageReceivedAtSinceEpoch + keepLastMessagesFromServerWithinMs < DateTime.now().millisecondsSinceEpoch;
 }
 
 class ClientListeningToRoute {
@@ -53,7 +56,7 @@ class Middleware {
   int _lastPongFromServer;
   SendClientData sendClientData;
   ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
-  final lastMessagesFromServer = [];
+  final List<LastServerMessage> lastMessagesFromServer = [];
 
   static String
       CLIENT_GENERATED_ID; // 1 por pessoa, dessa maneira a pessoa ainda pode obter a resposta caso desconectar e conectar novamente
@@ -182,10 +185,6 @@ class Middleware {
   Listening listen({@required ListenCli listenCli}) {
     Internal.instance.logger(message: 'listen');
 
-    dynamic hash = listenCli.toMap();
-    hash.remove(AbstractRequestCli.jsonClientRequestId);
-    hash.remove(ListenCli.jsonListenId);
-    hash = jsonEncode(hash);
     String listenId;
 
     final VoidCallback notifyMotherStreamThatChildStreamIsNotListeningAnymore =
@@ -195,7 +194,7 @@ class Middleware {
       this.stopListening(listenId: listenId);
     };
     final alreadyListening = listeningTo
-        .firstWhere((listenId) => listenId.hash == hash, orElse: () => null);
+        .firstWhere((listenId) => listenId.hash == listenCli.hash, orElse: () => null);
     if (alreadyListening != null) {
       listenId = alreadyListening.listenId;
       Internal.instance.logger(message: 'alreadyListening');
@@ -230,7 +229,7 @@ class Middleware {
           query: listenCli.query,
           streamController: streamController,
           clientRequestId: listenCli.clientRequestId,
-          hash: hash,
+          hash: listenCli.hash,
           listenId: listenId);
 
       listenCli.listenId = listen.listenId;

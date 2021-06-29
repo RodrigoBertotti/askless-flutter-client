@@ -1,3 +1,5 @@
+import 'package:askless/askless.dart';
+import 'package:askless/src/constants.dart';
 import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 
 class ConfigureConnectionResponseCli extends ResponseCli{
@@ -49,6 +51,12 @@ class ConnectionConfiguration{
     this.disconnectClientAfterSecondsWithoutClientPing = map['disconnectClientAfterSecondsWithoutClientPing'];
   }
 
+  bool get differentProjectName => AsklessClient.instance.projectName != null &&
+      projectName != null &&
+      AsklessClient.instance.projectName !=
+          projectName;
+
+  bool get incompatibleVersion => (clientVersionCodeSupported.moreThanOrEqual != null && CLIENT_LIBRARY_VERSION_CODE < clientVersionCodeSupported.moreThanOrEqual) || (clientVersionCodeSupported.lessThanOrEqual != null && CLIENT_LIBRARY_VERSION_CODE > clientVersionCodeSupported.lessThanOrEqual);
 
 }
 

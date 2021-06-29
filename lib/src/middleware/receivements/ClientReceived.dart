@@ -25,7 +25,7 @@ abstract class ClientReceived{
   }
 
   static int get startCheckingLastMessagesFromServerAfterSize => 100;
-  static int get keepLastMessagesFromServerWithinMs => 10 * 60 * 1000;
+
 
   factory ClientReceived.from(String data){
     if(data == 'pong' || data == 'welcome')
@@ -74,13 +74,12 @@ abstract class ClientReceived{
   }
 
   void checkCleanOldMessagesFromServer({int removeCount:10}) {
-    final NOW = DateTime.now().millisecondsSinceEpoch;
     if(Internal.instance.middleware.lastMessagesFromServer.length > startCheckingLastMessagesFromServerAfterSize){
       Internal.instance.logger(message: "Start of removing old messages received from server... (total: "+(Internal.instance.middleware.lastMessagesFromServer.length.toString())+")");
       final List<LastServerMessage> remove = [];
       for(int i=Internal.instance.middleware.lastMessagesFromServer.length-1; i >= 0 && remove.length < removeCount; i--){
         final messageReceivedFromServer = Internal.instance.middleware.lastMessagesFromServer[i];
-        if(messageReceivedFromServer.messageReceivedAtSinceEpoch + keepLastMessagesFromServerWithinMs < NOW) //keep received message for 10 minutes
+        if(messageReceivedFromServer.shouldBeRemoved) //keep received message for 10 minutes
           remove.add(messageReceivedFromServer);
       }
       remove.forEach((element) => Internal.instance.middleware.lastMessagesFromServer.remove(element));
