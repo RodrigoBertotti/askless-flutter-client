@@ -48,7 +48,7 @@ class Middleware with ListeningHandler {
 
   get lastPongFromServer => _lastPongFromServer;
 
-  Future<ResponseCli> connect(
+  Future<ResponseCli> performConnection(
       {ownClientId, Map<String, dynamic> headers}) async {
     this._setOwnClientId(ownClientId);
 

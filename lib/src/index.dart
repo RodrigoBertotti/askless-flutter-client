@@ -202,11 +202,12 @@ class AsklessClient {
       Internal.instance.middleware = new Middleware(serverUrl);
     }else{
       Internal.instance.middleware.ws.close();
+      Internal.instance.middleware.ws = null;
     }
     this._ownClientId = ownClientId;
     this._headers = headers ?? {};
 
-    return  (await Internal.instance.middleware.connect(ownClientId: ownClientId, headers: headers));
+    return  (await Internal.instance.middleware.performConnection(ownClientId: ownClientId, headers: headers));
   }
 
 
