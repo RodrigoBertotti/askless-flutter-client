@@ -114,7 +114,6 @@ class Internal {
   }
 
 
-
   //Não pode ser acessado de fora do package:
   void notifyConnectionChanged(Connection conn, {DisconnectionReason disconnectionReason}) {
     this._connection = conn;
@@ -202,7 +201,7 @@ class AsklessClient {
       _disconnectAndClearByClient();
       Internal.instance.middleware = new Middleware(serverUrl);
     }else{
-      Internal.instance.middleware.close();
+      Internal.instance.middleware.ws.close();
     }
     this._ownClientId = ownClientId;
     this._headers = headers ?? {};

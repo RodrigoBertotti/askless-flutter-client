@@ -83,16 +83,16 @@ class SendClientData {
     for (final pendingRequest in copy) {
       if (!pendingRequest.serverReceived) {
         final json = jsonEncode(pendingRequest.data.toMap());
-        this.middleware.channel?.sink?.add(json); //TODO: remover do lado web o que foi adicionado aqui?
+        this.middleware?.sinkAdd?.call(json); //TODO: remover do lado web o que foi adicionado aqui?
       }
     }
   }
 
-  Future<ResponseCli> send({@required AbstractRequestCli data, bool neverTimeout=false}) {
+  Future<ResponseCli> runOperationInServer({@required AbstractRequestCli data, bool neverTimeout=false}) {
 
     final json = jsonEncode(data.toMap());
     Internal.instance.logger(message: 'Sending to Server...', level: Level.debug, additionalData: json);
-    this.middleware.channel?.sink?.add(json); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
+    this.middleware?.sinkAdd?.call(json); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
 
     final completer = new Completer<ResponseCli>();
 
@@ -118,25 +118,12 @@ class SendClientData {
       });
     }
 
-    final addAsPending = (){
-      //Se for um listening, deve ficar no final, do contrário
-      //corre o risco de receber 2 dados iguais por conta do método onClientListen na Server
-      _lockPendingRequestsList.synchronized(() {
-        this._pendingRequestsList.add(request);
-        final firsts = this._pendingRequestsList.where((r) => !(r.data is ListenCli)).toList();
-        final lasts = this._pendingRequestsList.where((r) => r.data is ListenCli).toList();
-        this._pendingRequestsList.clear();
-        this._pendingRequestsList.addAll(firsts);
-        this._pendingRequestsList.addAll(lasts);
-      });
-    };
-
     _lockPendingRequestsList.synchronized(() async {
-      if (Internal.instance.middleware.channel != null){  //TODO analisar no lado do cliente JS
-        addAsPending();
+      if (Internal.instance.middleware.ws?.isReady == true){  //TODO analisar no lado do cliente JS
+        addAsPending(request);
       } else {
         if (data.waitUntilGetServerConnection) {
-          addAsPending();
+          addAsPending(request);
           Internal.instance.logger(message: 'Waiting connection to send message', level: Level.debug);
         } else {
           Internal.instance.logger(message: 'You can\'t send this message while not connected', level: Level.debug);
@@ -153,5 +140,18 @@ class SendClientData {
     });
 
     return completer.future;
+  }
+
+  void addAsPending (_Request request){
+    //Se for um listening, deve ficar no final, do contrário
+    //corre o risco de receber 2 dados iguais por conta do método onClientListen na Server
+    _lockPendingRequestsList.synchronized(() {
+      this._pendingRequestsList.add(request);
+      final firsts = this._pendingRequestsList.where((r) => !(r.data is ListenCli)).toList();
+      final lasts = this._pendingRequestsList.where((r) => r.data is ListenCli).toList();
+      this._pendingRequestsList.clear();
+      this._pendingRequestsList.addAll(firsts);
+      this._pendingRequestsList.addAll(lasts);
+    });
   }
 }
