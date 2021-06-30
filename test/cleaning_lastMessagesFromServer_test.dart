@@ -50,6 +50,7 @@ void main() {
 
   test('checkCleanOldMessagesFromServer: lastMessagesFromServer.length should be 60 + 70 = 130', () {
     setLastMessagesFromServer(60, 70);
+    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(130));
 
     expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(130));
   });
@@ -57,6 +58,7 @@ void main() {
 
   test('checkCleanOldMessagesFromServer lastMessagesFromServer.length should be 118', () {
     setLastMessagesFromServer(60, 70);
+    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(130));
 
     new _ClientReceivedTest().checkCleanOldMessagesFromServer(removeCount: 12);
 
@@ -65,6 +67,7 @@ void main() {
 
   test('checkCleanOldMessagesFromServer lastMessagesFromServer.length should be 180', () {
     setLastMessagesFromServer(178, 12);
+    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(190));
 
     new _ClientReceivedTest().checkCleanOldMessagesFromServer(removeCount: 10);
 

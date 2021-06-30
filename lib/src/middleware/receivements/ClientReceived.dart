@@ -18,7 +18,6 @@ import 'ClientReceivedNewDataForListener.dart';
 abstract class ClientReceived{
   final bool confirmToServerThatDataHasBeenReceived;
   final dynamic messageMap;
-  final List<LastServerMessage> lastMessagesFromServer = [];
 
   ClientReceived(this.messageMap, this.confirmToServerThatDataHasBeenReceived){
     assert(messageMap!=null);
@@ -59,14 +58,14 @@ abstract class ClientReceived{
 
     confirmReceiptToServer(serverId);
 
-    final dataAlreadySentByServerBefore = lastMessagesFromServer.firstWhere((m) => m.serverId == serverId, orElse: () => null);
+    final dataAlreadySentByServerBefore = Internal.instance.middleware.lastMessagesFromServer.firstWhere((m) => m.serverId == serverId, orElse: () => null);
     if(dataAlreadySentByServerBefore != null){
       Internal.instance.logger(message: "handle, data already received: " + serverId);
       dataAlreadySentByServerBefore.messageReceivedAtSinceEpoch = DateTime.now().millisecondsSinceEpoch;
       return;
     }
 
-    lastMessagesFromServer.add(new LastServerMessage(serverId));
+    Internal.instance.middleware.lastMessagesFromServer.add(new LastServerMessage(serverId));
 
     this.checkCleanOldMessagesFromServer();
 
@@ -74,15 +73,15 @@ abstract class ClientReceived{
   }
 
   void checkCleanOldMessagesFromServer({int removeCount:10}) {
-    if(lastMessagesFromServer.length > startCheckingLastMessagesFromServerAfterSize){
-      Internal.instance.logger(message: "Start of removing old messages received from server... (total: "+(lastMessagesFromServer.length.toString())+")");
+    if(Internal.instance.middleware.lastMessagesFromServer.length > startCheckingLastMessagesFromServerAfterSize){
+      Internal.instance.logger(message: "Start of removing old messages received from server... (total: "+(Internal.instance.middleware.lastMessagesFromServer.length.toString())+")");
       final List<LastServerMessage> remove = [];
-      for(int i=lastMessagesFromServer.length-1; i >= 0 && remove.length < removeCount; i--){
-        final messageReceivedFromServer = lastMessagesFromServer[i];
+      for(int i=Internal.instance.middleware.lastMessagesFromServer.length-1; i >= 0 && remove.length < removeCount; i--){
+        final messageReceivedFromServer = Internal.instance.middleware.lastMessagesFromServer[i];
         if(messageReceivedFromServer.shouldBeRemoved) //keep received message for 10 minutes
           remove.add(messageReceivedFromServer);
       }
-      remove.forEach((element) => lastMessagesFromServer.remove(element));
+      remove.forEach((element) => Internal.instance.middleware.lastMessagesFromServer.remove(element));
       Internal.instance.logger(message: "...end of removing old messages received from server (removed: "+(remove.length.toString())+")");
     }
   }
