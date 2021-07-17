@@ -27,11 +27,11 @@ abstract class ClientReceived{
 
   static int get startCheckingLastMessagesFromServerAfterSize => 100;
 
-  factory ClientReceived.from(String data){
+  factory ClientReceived.from(data){
     if(data == 'pong' || data == 'welcome')
       return new ClientReceivedIgnore();
 
-    final messageMap = jsonDecode(data);
+    final messageMap = data is String ? jsonDecode(data) : data;
     if(messageMap[AbstractServerData.srvServerId]==null)
       throw 'Unknown: '+messageMap;
 

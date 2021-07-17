@@ -1,6 +1,7 @@
 
 
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:askless/askless.dart';
@@ -12,8 +13,10 @@ import 'package:askless/src/middleware/data/request/AbstractRequestCli.dart';
 import 'package:askless/src/middleware/data/request/ClientConfirmReceiptCli.dart';
 import 'package:askless/src/middleware/data/request/ConfigureConnectionRequestCli.dart';
 import 'package:askless/src/middleware/index.dart';
+import 'package:askless/src/middleware/receivements/ClientReceived.dart';
 import 'package:askless/src/middleware/ws_channel/AbstractIOWsChannel.dart';
 import 'package:askless/src/middleware/ws_channel/FakeIOWsChannel.dart';
+import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 
@@ -54,25 +57,41 @@ Map<String,dynamic> getConfigureConnectionResponseCliMap({int? lessThanOrEqual, 
   };
 }
 
-configureConnectionResponseMap () => jsonEncode(
-    {
-      'clientRequestId': 'clientRequestIdConfigureConnectionResponseMap',
-      'serverId': 'serverId#123',
-      '_class_type_configureconnection': '_',
-      'output': {
-        'intervalInSecondsServerSendSameMessage': 11,
-        'intervalInSecondsClientSendSameMessage': 22,
-        'intervalInSecondsClientPing': 33,
-        'reconnectClientAfterSecondsWithoutServerPong': 44,
-        'isFromServer': true,
-        'serverVersion': "1.0.0",
-        'clientVersionCodeSupported': {
-          'lessThanOrEqual': 1000,
-          'moreThanOrEqual': 1,
-        },
-        'projectName': 'project',
-        'requestTimeoutInSeconds': 55,
-        'disconnectClientAfterSecondsWithoutClientPing': 66,
-      }
-    }
-);
+configureConnectionResponseMap () => {
+  'clientRequestId': 'clientRequestIdConfigureConnectionResponseMap',
+  'serverId': 'serverId#123',
+  '_class_type_configureconnection': '_',
+  'output': {
+    'intervalInSecondsServerSendSameMessage': 11,
+    'intervalInSecondsClientSendSameMessage': 22,
+    'intervalInSecondsClientPing': 33,
+    'reconnectClientAfterSecondsWithoutServerPong': 44,
+    'isFromServer': true,
+    'serverVersion': "1.0.0",
+    'clientVersionCodeSupported': {
+      'lessThanOrEqual': 1000,
+      'moreThanOrEqual': 1,
+    },
+    'projectName': 'project',
+    'requestTimeoutInSeconds': 55,
+    'disconnectClientAfterSecondsWithoutClientPing': 66,
+  }
+};
+
+
+void testClientReceivingDataFromServer(Map<String,dynamic> map, String suffix){
+  assert(map['serverId'] != null);
+
+  test('confirm to the server right after client receives data on '+suffix, () {
+    final completerWithServerId = new Completer<String>();
+    FakeIOWsChannel.configure(serverResponseToClientConfirmReceiptCli: (request){
+      expect(request.serverId, equals(map['serverId']));
+      completerWithServerId.complete(request.serverId);
+    });
+    AsklessClient.instance.connect();
+
+    ClientReceived.from(map).handle(); //simulate server sending data
+
+    expect(completerWithServerId.future, completion(map['serverId']));
+  });
+}

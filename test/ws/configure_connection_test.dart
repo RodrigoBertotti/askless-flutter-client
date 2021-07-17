@@ -53,17 +53,20 @@ void main(){
       expect(AsklessClient.instance.connection, equals(Connection.DISCONNECTED));
     });
 
-    test('confirm to the server right after client receives data', () {
-      final completerWithServerId = new Completer<String>();
-      FakeIOWsChannel.configure(serverResponseToClientConfirmReceiptCli: (request){
-        expect(request.serverId, equals('serverId#123'));
-        completerWithServerId.complete(request.serverId);
-      });
-      AsklessClient.instance.connect();
-      ClientReceived.from(configureConnectionResponseMap()).handle();
+    testClientReceivingDataFromServer(configureConnectionResponseMap(), 'configure connection');
 
-      expect(completerWithServerId.future, completion('serverId#123'));
-    });
+    // test('confirm to the server right after client receives data', () {
+    //   final completerWithServerId = new Completer<String>();
+    //   FakeIOWsChannel.configure(serverResponseToClientConfirmReceiptCli: (request){
+    //     expect(request.serverId, equals('serverId#123'));
+    //     completerWithServerId.complete(request.serverId);
+    //   });
+    //   AsklessClient.instance.connect();
+    //
+    //   ClientReceived.from(configureConnectionResponseMap()).handle(); //simulate server sending data
+    //
+    //   expect(completerWithServerId.future, completion('serverId#123'));
+    // });
 
     // test('configure getIt AbstractIOWsChannel', (){
     //   expect(getIt.get<AbstractIOWsChannel>(param1: 'wss://example.com').serverUrl, equals('wss://example.com'));
