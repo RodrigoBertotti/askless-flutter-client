@@ -1,10 +1,10 @@
 import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 
 class ServerConfirmReceiptCli extends ResponseCli{
-  static final typeResponse = '_class_type_serverconfirmreceipt';
+  static const typeResponse = '_class_type_serverconfirmreceipt';
   final _class_type_serverconfirmreceipt = '_';
 
-  ServerConfirmReceiptCli.fromMap(messageMap) {
-    super.setValuesFromMap(messageMap);
-  }
+  @override
+  ServerConfirmReceiptCli.fromMap(messageMap) : super.fromMap(messageMap);
+
 }

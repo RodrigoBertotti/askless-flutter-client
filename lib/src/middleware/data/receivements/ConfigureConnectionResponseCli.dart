@@ -3,40 +3,40 @@ import 'package:askless/src/constants.dart';
 import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 
 class ConfigureConnectionResponseCli extends ResponseCli{
-  static final typeResponse = '_class_type_configureconnection';
+  static const typeResponse = '_class_type_configureconnection';
   final _class_type_configureconnection = '_';
 
-  ConfigureConnectionResponseCli.fromMap(messageMap) {
-    super.setValuesFromMap(messageMap);
-  }
+  ConfigureConnectionResponseCli.fromMap(messageMap) : super.fromMap(messageMap);
 
-  ConnectionConfiguration get connectionConfiguration => this.output == null ? null : ConnectionConfiguration.fromMap(this.output);
+  ConnectionConfiguration get connectionConfiguration => ConnectionConfiguration.fromMap(this.output);
 }
 
 class ConnectionConfiguration{
-  int intervalInSecondsServerSendSameMessage;
-  int intervalInSecondsClientSendSameMessage;
-  int intervalInSecondsClientPing;
-  int reconnectClientAfterSecondsWithoutServerPong;
-  int disconnectClientAfterSecondsWithoutClientPing;
-  String serverVersion;
-  ClientVersionCodeSupported clientVersionCodeSupported;
-  bool isFromServer = false;
-  String projectName;
-  int requestTimeoutInSeconds;
+  late int intervalInSecondsServerSendSameMessage;
+  late int intervalInSecondsClientSendSameMessage;
+  late int intervalInSecondsClientPing;
+  late int reconnectClientAfterSecondsWithoutServerPong;
+  late int disconnectClientAfterSecondsWithoutClientPing;
+  late String serverVersion;
+  late ClientVersionCodeSupported clientVersionCodeSupported;
+  late bool isFromServer;
+  String? projectName;
+  late int requestTimeoutInSeconds;
 
   ConnectionConfiguration({
-    this.clientVersionCodeSupported,
+    ClientVersionCodeSupported? clientVersionCodeSupported,
     this.disconnectClientAfterSecondsWithoutClientPing:38,
     this.intervalInSecondsClientPing:5,
     this.intervalInSecondsClientSendSameMessage:5,
     this.intervalInSecondsServerSendSameMessage:5,
-    this.isFromServer,
+    this.isFromServer:false,
     this.projectName,
     this.reconnectClientAfterSecondsWithoutServerPong:10,
     this.requestTimeoutInSeconds:15,
-    this.serverVersion
-  });
+    this.serverVersion:'none',
+  }){
+    this.clientVersionCodeSupported = clientVersionCodeSupported ?? ClientVersionCodeSupported();
+  }
 
   ConnectionConfiguration.fromMap(map){
     this.intervalInSecondsServerSendSameMessage = map['intervalInSecondsServerSendSameMessage'];
@@ -56,14 +56,14 @@ class ConnectionConfiguration{
       AsklessClient.instance.projectName !=
           projectName;
 
-  bool get incompatibleVersion => (clientVersionCodeSupported.moreThanOrEqual != null && CLIENT_LIBRARY_VERSION_CODE < clientVersionCodeSupported.moreThanOrEqual) || (clientVersionCodeSupported.lessThanOrEqual != null && CLIENT_LIBRARY_VERSION_CODE > clientVersionCodeSupported.lessThanOrEqual);
+  bool get incompatibleVersion => (clientVersionCodeSupported.moreThanOrEqual != null && CLIENT_LIBRARY_VERSION_CODE < clientVersionCodeSupported.moreThanOrEqual!) || (clientVersionCodeSupported.lessThanOrEqual != null && CLIENT_LIBRARY_VERSION_CODE > clientVersionCodeSupported.lessThanOrEqual!);
 
 }
 
 class ClientVersionCodeSupported{
 
-  int lessThanOrEqual;
-  int moreThanOrEqual;
+  int? lessThanOrEqual;
+  int? moreThanOrEqual;
 
   ClientVersionCodeSupported({this.lessThanOrEqual, this.moreThanOrEqual});
 
@@ -71,7 +71,5 @@ class ClientVersionCodeSupported{
     lessThanOrEqual = map['lessThanOrEqual'];
     moreThanOrEqual = map['moreThanOrEqual'];
   }
-
-
 
 }

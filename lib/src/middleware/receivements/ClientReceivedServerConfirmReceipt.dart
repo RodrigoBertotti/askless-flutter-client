@@ -11,7 +11,7 @@ class ClientReceivedServerConfirmReceipt extends ClientReceived{
   @override
   void implementation() {
     final serverConfirmReceiptCli = ServerConfirmReceiptCli.fromMap(messageMap);
-    Internal.instance.middleware.sendClientData.setAsReceivedPendingMessageThatServerShouldReceive(serverConfirmReceiptCli.clientRequestId);
+    Internal.instance.middleware!.sendClientData.setAsReceivedPendingMessageThatServerShouldReceive(serverConfirmReceiptCli.clientRequestId);
   }
 
 }

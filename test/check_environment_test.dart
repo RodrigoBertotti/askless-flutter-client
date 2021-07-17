@@ -5,35 +5,22 @@ import 'package:askless/src/middleware/data/receivements/ConfigureConnectionResp
 import 'package:askless/src/middleware/receivements/ClientReceivedConfigureConnectionResponse.dart';
 import 'package:test/test.dart';
 
-ConnectionConfiguration get getNewConnectionConfiguration {
-  return new ConnectionConfiguration(
-    clientVersionCodeSupported: new ClientVersionCodeSupported(
-        lessThanOrEqual: CLIENT_LIBRARY_VERSION_CODE,
-        moreThanOrEqual: CLIENT_LIBRARY_VERSION_CODE,
-    ),
-    projectName: 'unit tests',
-    serverVersion: '...',
-    disconnectClientAfterSecondsWithoutClientPing: 10,
-    intervalInSecondsClientPing: 10,
-    intervalInSecondsClientSendSameMessage: 10,
-    intervalInSecondsServerSendSameMessage: 10,
-    isFromServer: true,
-    reconnectClientAfterSecondsWithoutServerPong: 10,
-    requestTimeoutInSeconds: 10,
-  );
-}
+import 'index.dart';
+
+
 
 void main() {
   Internal.instance.middleware = new Middleware('test');
 
   test('checkIfIsNeededToStopConnectionFromBeingEstablished should fail because of lessThanOrEqual', () {
-    Internal.instance.middleware.connectionConfiguration = getNewConnectionConfiguration;
-    Internal.instance.middleware.connectionConfiguration.clientVersionCodeSupported.lessThanOrEqual--;
+    Internal.instance.middleware!.connectionConfiguration = getNewConnectionConfiguration();
+    Internal.instance.middleware!.connectionConfiguration.clientVersionCodeSupported.lessThanOrEqual = Internal.instance.middleware!.connectionConfiguration.clientVersionCodeSupported.lessThanOrEqual! - 1;
 
-    String error;
+
+    String? error;
     try{
-      new ClientReceivedConfigureConnectionResponse({}).checkIfIsNeededToStopConnectionFromBeingEstablished(
-          Internal.instance.middleware.connectionConfiguration
+      new ClientReceivedConfigureConnectionResponse(getConfigureConnectionResponseCliMap()).checkIfIsNeededToStopConnectionFromBeingEstablished(
+          Internal.instance.middleware!.connectionConfiguration
       );
     }catch(e){
       error = e.toString();
@@ -41,15 +28,14 @@ void main() {
     expect(error, contains('Check if you server and client are updated!'));
   });
 
-
   test('checkIfIsNeededToStopConnectionFromBeingEstablished should fail because of moreThanOrEqual', () {
-    Internal.instance.middleware.connectionConfiguration = getNewConnectionConfiguration;
-    Internal.instance.middleware.connectionConfiguration.clientVersionCodeSupported.moreThanOrEqual++;
+    Internal.instance.middleware!.connectionConfiguration = getNewConnectionConfiguration();
+    Internal.instance.middleware!.connectionConfiguration.clientVersionCodeSupported.moreThanOrEqual = Internal.instance.middleware!.connectionConfiguration.clientVersionCodeSupported.moreThanOrEqual! + 1;
 
-    String error;
+    String? error;
     try{
-      new ClientReceivedConfigureConnectionResponse({}).checkIfIsNeededToStopConnectionFromBeingEstablished(
-          Internal.instance.middleware.connectionConfiguration
+      new ClientReceivedConfigureConnectionResponse(getConfigureConnectionResponseCliMap()).checkIfIsNeededToStopConnectionFromBeingEstablished(
+          Internal.instance.middleware!.connectionConfiguration
       );
     }catch(e){
       error = e.toString();
@@ -58,12 +44,12 @@ void main() {
   });
 
   test('checkIfIsNeededToStopConnectionFromBeingEstablished should work without error', () {
-    Internal.instance.middleware.connectionConfiguration = getNewConnectionConfiguration;
+    Internal.instance.middleware!.connectionConfiguration = getNewConnectionConfiguration();
 
-    String error;
+    String? error;
     try{
-      new ClientReceivedConfigureConnectionResponse({}).checkIfIsNeededToStopConnectionFromBeingEstablished(
-          Internal.instance.middleware.connectionConfiguration
+      new ClientReceivedConfigureConnectionResponse(getConfigureConnectionResponseCliMap()).checkIfIsNeededToStopConnectionFromBeingEstablished(
+          Internal.instance.middleware!.connectionConfiguration
       );
     }catch(e){
       error = e.toString();

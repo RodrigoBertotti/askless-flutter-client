@@ -2,9 +2,9 @@
 
 
 class AbstractServerData{
-  static final srvServerId = 'serverId';
+  static const srvServerId = 'serverId';
 
-  String serverId;
+  late final String serverId;
 
   fromMap(messageMap){
     serverId = messageMap['serverId'];

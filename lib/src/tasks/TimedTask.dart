@@ -4,7 +4,7 @@
 import 'package:askless/src/index.dart';
 
 abstract class TimedTask{
-  int _intervalInSeconds;
+  late int _intervalInSeconds;
   bool runTask = false;
   String taskName;
 

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:askless/src/middleware/data/request/OperationRequestCli.dart';
 
+import '../Mappable.dart';
+
 class ListeningTo extends ListenCli{
   String listenId;
 
-  ListeningTo({@required this.listenId, @required String route, query, String clientRequestId}) : super(route: route, query: query){
+  ListeningTo({required this.listenId, required String route, query, String ? clientRequestId}) : super(route: route, query: query){
     if(clientRequestId!=null)
       super.clientRequestId = clientRequestId;
   }
@@ -23,14 +25,15 @@ class ListeningTo extends ListenCli{
   }
 }
 
-class PingPong{
-  static final type = '_class_type_pingpong';
+class PingPong implements Mappable{
+  static const type = '_class_type_pingpong';
   final _class_type_pingpong = '_';
 
   List<ListeningTo> listeningToRoutes;
 
-  PingPong({@required this.listeningToRoutes});
+  PingPong({required this.listeningToRoutes});
 
+  @override
   toMap() {
     final map = {
       type: '_',
@@ -38,4 +41,7 @@ class PingPong{
     };
     return map;
   }
+
+
+
 }

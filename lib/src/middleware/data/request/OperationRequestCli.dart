@@ -8,16 +8,19 @@ import 'package:askless/src/middleware/data/request/AbstractRequestCli.dart';
 
 import '../../../constants.dart';
 
-abstract class _ModifyCli extends AbstractRequestCli{
-  final _class_type_modify = '_';
+abstract class ModifyCli extends AbstractRequestCli{
+  static const fieldType = '_class_type_modify';
+  static const fieldRoute = 'route';
+  static const fieldBody = 'body';
+  static const fieldQuery = 'query';
 
-  final String  route;
-  final dynamic body;
-  final Map<String,dynamic> query;
+  String  route;
+  dynamic body;
+  Map<String,dynamic> ? query;
 
-  _ModifyCli(
+  ModifyCli(
     this.route,
-    String requestType,
+    RequestType requestType,
     this.body,
     this.query
   ) : super(requestType, waitUntilGetServerConnection: false){
@@ -27,90 +30,98 @@ abstract class _ModifyCli extends AbstractRequestCli{
   @override
   Map<String, dynamic> toMap() {
     final map = super.toMap();
-    map['route'] = route;
-    map['body'] = body;
-    map['query'] = query;
-    map['_class_type_modify'] = '_';
+    map[fieldType] = '_';
+    map[fieldRoute] = route;
+    map[fieldBody] = body;
+    map[fieldQuery] = query;
     return map;
   }
 }
 
-class CreateCli extends _ModifyCli{
+class CreateCli extends ModifyCli{
   CreateCli({
-    @required String route,
-
-    @required body,
-    Map<String, dynamic> query
+    required String route,
+    required body,
+    Map<String, dynamic> ? query
   }) : super(route, RequestType.CREATE, body, query);
 }
 
-class UpdateCli extends _ModifyCli{
+class UpdateCli extends ModifyCli{
   UpdateCli({
-    @required String route,
-
-    @required Map<String, dynamic> body,
-    query
+    required String route,
+    required Map<String, dynamic> body,
+    Map<String, dynamic> ? query
   }) : super(route, RequestType.UPDATE, body, query);
+
 }
 
-class DeleteCli extends _ModifyCli{
+class DeleteCli extends ModifyCli{
   DeleteCli({
-    @required String route,
-
-    Map<String, dynamic> query
+    required String route,
+    Map<String, dynamic> ? query
   }) : super(route, RequestType.DELETE, null, query);
 }
 
 class ReadCli extends AbstractRequestCli{
-  final _class_type_read = '_';
+  static const fieldType = '_class_type_read';
+  static const fieldRoute = 'route';
+  static const fieldQuery = 'query';
 
-  final String  route;
-  final dynamic query;
+  String  route;
+  Map<String, dynamic> ? query;
 
   ReadCli({
-    @required this.route,
+    required this.route,
     this.query
   }) : super(RequestType.READ, waitUntilGetServerConnection: false);
 
   @override
   Map<String, dynamic> toMap() {
     final map = super.toMap();
-    map['_class_type_read'] = '_';
-    map['route'] = route;
-    map['query'] = query;
+    map[fieldType] = '_';
+    map[fieldRoute] = route;
+    map[fieldQuery] = query;
     return map;
   }
+
+  // @override
+  // ReadCli.fromMap(map) : super.fromMap(map) {
+  //   route = map[fieldRoute];
+  //   query = map[fieldQuery];
+  // }
 }
 
 class ListenCli extends AbstractRequestCli{
-  static final String type = '_class_type_listen';
-  final _class_type_listen = '_';
-  static final String jsonListenId = 'listenId';
+  static const String fieldType = '_class_type_listen';
+  static const String fieldListenId = 'listenId';
+  static const String fieldRoute = 'route';
+  static const String fieldQuery = 'query';
 
-  final String  route;
-  final dynamic query;
-  String listenId;
+  String  route;
+  dynamic query;
+  late String listenId;
 
   ListenCli({
-    @required this.route,
+    required this.route,
     this.query
   }) : super(RequestType.LISTEN);
 
   @override
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(){
     final map = super.toMap();
-    map[type] = '_';
-    map['route'] = route;
-    map['query'] = query;
-    map[jsonListenId] = listenId;
+    map[fieldType] = '_';
+    map[fieldRoute] = route;
+    map[fieldQuery] = query;
+    map[fieldListenId] = listenId;
     return map;
   }
 
   String get hash {
     dynamic hash = toMap();
-    hash.remove(AbstractRequestCli.jsonClientRequestId);
-    hash.remove(ListenCli.jsonListenId);
+    hash.remove(AbstractRequestCli.fieldClientRequestId);
+    hash.remove(ListenCli.fieldListenId);
     hash = jsonEncode(hash);
     return hash;
   }
+
 }

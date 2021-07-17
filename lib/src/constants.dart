@@ -1,12 +1,12 @@
 
-class RequestType {
-  static const LISTEN = 'LISTEN';
-  static const CONFIRM_RECEIPT = 'CONFIRM_RECEIPT';
-  static const CONFIGURE_CONNECTION = 'CONFIGURE_CONNECTION';
-  static const READ = 'READ';
-  static const CREATE = 'CREATE';
-  static const UPDATE = 'UPDATE';
-  static const DELETE = 'DELETE';
+enum RequestType {
+  LISTEN,
+  CONFIRM_RECEIPT,
+  CONFIGURE_CONNECTION,
+  READ,
+  CREATE,
+  UPDATE,
+  DELETE
 }
 
 const REQUEST_PREFIX = 'REQ-';

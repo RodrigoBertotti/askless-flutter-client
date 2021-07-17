@@ -52,13 +52,13 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
 //    run[0]();
   }
 
-  refreshProductsBySearch({@required String search}) {
+  refreshProductsBySearch({required String search}) {
     setState(() {
       this.search = search;
     });
   }
 
-  removeProduct({@required int id}) async {
+  removeProduct({required int id}) async {
     final response = await AsklessClient.instance.delete(route: 'product', query: {'id': id});
 
     if (response.isSuccess) {
@@ -71,7 +71,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
     }
   }
 
-  addProduct({@required Product product}) async {
+  addProduct({required Product product}) async {
     final response = await AsklessClient.instance.create(route: 'product', body: product.toMap());
 
     if (response.isSuccess) {
@@ -98,7 +98,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
   }
 
   connectAsAdmin(
-      {@required ownClientId, @required String token, @required onDisconnect}) {
+      {required ownClientId, required String token, required onDisconnect}) {
     this.selectedToken = token;
     AsklessClient.instance.connect(
       ownClientId: ownClientId,
@@ -125,7 +125,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
     super.dispose();
   }
 
-  Widget buildListenToProducts({@required String route}) {
+  Widget buildListenToProducts({required String route}) {
     return AsklessClient.instance.listenAndBuild(
       route: route,
       query: {'search': search},
@@ -372,7 +372,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
 
   //SET STATE PARECE SER A CAUSA DE NÃO MOSTRAR NOVOS DADOS NA TELA
 
-  Container _buildList({@required AsyncSnapshot<dynamic> snapshots}) {
+  Container _buildList({required AsyncSnapshot<dynamic> snapshots}) {
     Widget child;
     if (snapshots.error != null) {
       child = Center(
@@ -413,7 +413,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
   }
 
   Widget _buildConnectAsAdmin(
-      {@required String token, @required int ownClientId, bool wrongToken = false}) {
+      {required String token, required int ownClientId, bool wrongToken = false}) {
 
     return Container(
         width: 300,

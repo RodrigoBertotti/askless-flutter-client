@@ -12,6 +12,7 @@ import 'package:askless/src/middleware/receivements/ClientReceivedIgnore.dart';
 import 'package:askless/src/middleware/receivements/ClientReceivedResponse.dart';
 import 'package:askless/src/middleware/receivements/ClientReceivedServerConfirmReceipt.dart';
 import 'ClientReceivedNewDataForListener.dart';
+import 'package:collection/collection.dart';
 
 
 
@@ -58,14 +59,14 @@ abstract class ClientReceived{
 
     confirmReceiptToServer(serverId);
 
-    final dataAlreadySentByServerBefore = Internal.instance.middleware.lastMessagesFromServer.firstWhere((m) => m.serverId == serverId, orElse: () => null);
+    final LastServerMessage? dataAlreadySentByServerBefore = Internal.instance.middleware!.lastMessagesFromServer.firstWhereOrNull((m) => m.serverId == serverId);
     if(dataAlreadySentByServerBefore != null){
       Internal.instance.logger(message: "handle, data already received: " + serverId);
       dataAlreadySentByServerBefore.messageReceivedAtSinceEpoch = DateTime.now().millisecondsSinceEpoch;
       return;
     }
 
-    Internal.instance.middleware.lastMessagesFromServer.add(new LastServerMessage(serverId));
+    Internal.instance.middleware!.lastMessagesFromServer.add(new LastServerMessage(serverId));
 
     this.checkCleanOldMessagesFromServer();
 
@@ -73,15 +74,15 @@ abstract class ClientReceived{
   }
 
   void checkCleanOldMessagesFromServer({int removeCount:10}) {
-    if(Internal.instance.middleware.lastMessagesFromServer.length > startCheckingLastMessagesFromServerAfterSize){
-      Internal.instance.logger(message: "Start of removing old messages received from server... (total: "+(Internal.instance.middleware.lastMessagesFromServer.length.toString())+")");
+    if(Internal.instance.middleware!.lastMessagesFromServer.length > startCheckingLastMessagesFromServerAfterSize){
+      Internal.instance.logger(message: "Start of removing old messages received from server... (total: "+(Internal.instance.middleware!.lastMessagesFromServer.length.toString())+")");
       final List<LastServerMessage> remove = [];
-      for(int i=Internal.instance.middleware.lastMessagesFromServer.length-1; i >= 0 && remove.length < removeCount; i--){
-        final messageReceivedFromServer = Internal.instance.middleware.lastMessagesFromServer[i];
+      for(int i=Internal.instance.middleware!.lastMessagesFromServer.length-1; i >= 0 && remove.length < removeCount; i--){
+        final messageReceivedFromServer = Internal.instance.middleware!.lastMessagesFromServer[i];
         if(messageReceivedFromServer.shouldBeRemoved) //keep received message for 10 minutes
           remove.add(messageReceivedFromServer);
       }
-      remove.forEach((element) => Internal.instance.middleware.lastMessagesFromServer.remove(element));
+      remove.forEach((element) => Internal.instance.middleware!.lastMessagesFromServer.remove(element));
       Internal.instance.logger(message: "...end of removing old messages received from server (removed: "+(remove.length.toString())+")");
     }
   }
@@ -89,10 +90,10 @@ abstract class ClientReceived{
   void confirmReceiptToServer(String serverId) {
     Internal.instance.logger(message: "confirmReceiptToServer " + serverId);
 
-    if(Internal.instance.middleware.ws==null){
+    if(Internal.instance.middleware!.ws==null){
       Internal.instance.logger(message: "ws==null", level: Level.error);
     }
-    Internal.instance.middleware.sinkAdd(jsonEncode(new ClientConfirmReceiptCli(serverId).toMap()));
+    Internal.instance.middleware!.sinkAdd(map: new ClientConfirmReceiptCli(serverId));
   }
 }
 

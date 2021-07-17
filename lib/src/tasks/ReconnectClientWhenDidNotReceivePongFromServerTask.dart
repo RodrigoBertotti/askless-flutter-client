@@ -8,7 +8,7 @@ import 'TimedTask.dart';
 
 class ReconnectWhenDidNotReceivePongFromServerTask extends TimedTask{
 //  OnChangeConnectionWithServerListener onConnectionChange;
-  bool _lastPongFromServerBeforeWasNull;
+  late bool _lastPongFromServerBeforeWasNull = false;
   bool _isFirst = true;
 
   ReconnectWhenDidNotReceivePongFromServerTask() : super('ReconnectWhenDidNotReceivePongFromServerTask', new ConnectionConfiguration().reconnectClientAfterSecondsWithoutServerPong);
@@ -43,8 +43,8 @@ class ReconnectWhenDidNotReceivePongFromServerTask extends TimedTask{
       return;
     }
 
-    final lastPongFromServer = Internal.instance.middleware.lastPongFromServer;
-    if(Internal.instance.disconnectionReason!=DisconnectionReason.TOKEN_INVALID && ((lastPongFromServer == null && Internal.instance.middleware.ws!=null && _lastPongFromServerBeforeWasNull) || (lastPongFromServer != null && lastPongFromServer + intervalInSeconds * 1000 < DateTime.now().millisecondsSinceEpoch))) {
+    final lastPongFromServer = Internal.instance.middleware!.lastPongFromServer;
+    if(Internal.instance.disconnectionReason!=DisconnectionReason.TOKEN_INVALID && ((lastPongFromServer == null && Internal.instance.middleware!.ws!=null && _lastPongFromServerBeforeWasNull) || (lastPongFromServer != null && lastPongFromServer + intervalInSeconds * 1000 < DateTime.now().millisecondsSinceEpoch))) {
       Internal.instance.logger(message: 'reconnectWhenDidNotReceivePongFromServerTask reconnecting', level: Level.debug);
       AsklessClient.instance.reconnect();
     }

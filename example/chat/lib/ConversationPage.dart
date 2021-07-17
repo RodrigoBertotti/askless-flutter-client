@@ -29,7 +29,7 @@ class ConversationsPage extends StatefulWidget {
   Color _myColor;
   final String myName;
 
-  ConversationsPage({@required this.myName}){
+  ConversationsPage({required this.myName}){
     _iAmGreen = myName == 'green';
     this._myColor = _iAmGreen ? Colors.green : Colors.blue;
   }

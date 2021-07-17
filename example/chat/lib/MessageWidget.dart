@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MessageWidgetOfMyself extends StatelessWidget {
   final String text;
 
-  MessageWidgetOfMyself({@required this.text});
+  MessageWidgetOfMyself({required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class MessageWidgetOfMyself extends StatelessWidget {
 class MessageWidgetOfTheir extends StatelessWidget {
   final String text;
 
-  MessageWidgetOfTheir({@required this.text});
+  MessageWidgetOfTheir({required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class MessageWidgetOfTheir extends StatelessWidget {
   }
 }
 
-_buildBox({@required BuildContext context, @required String text}){
+_buildBox({required BuildContext context, required String text}){
   return Padding(
     child: Container(
       decoration: BoxDecoration(

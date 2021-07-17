@@ -8,6 +8,7 @@ import 'package:askless/src/tasks/SendMessageToServerAgainTask.dart';
 import 'package:askless/src/tasks/SendPingTask.dart';
 import '../askless.dart';
 import 'constants.dart';
+import 'dependency_injection/index.dart';
 import 'middleware/index.dart';
 import 'tasks/ReconnectWhenOffline.dart';
 
@@ -26,7 +27,6 @@ enum Connection{
 typedef OnConnectionChange(Connection connection);
 enum Level{info, debug, error, warning}
 typedef LoggerFunction (String message, Level level, {additionalData});
-
 
 LoggerFunction _getDefaultLogger() => (String message, Level level, {additionalData})  {
   //if(level==Level.debug) //Logger padrão mostra apenas erros
@@ -54,7 +54,7 @@ LoggerFunction _getDefaultLogger() => (String message, Level level, {additionalD
   }
 };
 class Logger{
-  LoggerFunction doLog;
+  late final LoggerFunction doLog;
 
   /// Allow customize the behavior of internal logs and enable/disable the default logger (optional).
   ///
@@ -79,88 +79,97 @@ class Logger{
   ///        )
   ///    );
   /// ```
-  Logger({LoggerFunction customLogger, bool useDefaultLogger}){
+  Logger({LoggerFunction ? customLogger, bool ? useDefaultLogger}){
     final defaultLogger = (useDefaultLogger == true || (customLogger == null && useDefaultLogger == null)) ? _getDefaultLogger() : null;
 
     doLog = (String message, Level level, {additionalData})  {
       if(defaultLogger!=null)
-        defaultLogger(message, level??=Level.debug, additionalData: additionalData);
+        defaultLogger(message, level, additionalData: additionalData);
       if(customLogger!=null)
-        customLogger(message, level??Level.debug, additionalData: additionalData);
+        customLogger(message, level, additionalData: additionalData);
     };
   }
 }
 
 class Internal {
-  static Internal _instance;
+  static Internal ? _instance;
   bool tasksStarted = false;
   final ReconnectWhenDidNotReceivePongFromServerTask reconnectWhenDidNotReceivePongFromServerTask = new ReconnectWhenDidNotReceivePongFromServerTask();
   final SendMessageToServerAgainTask sendMessageToServerAgainTask = new SendMessageToServerAgainTask();
   final SendPingTask sendPingTask = new SendPingTask();
   final ReconnectWhenOffline reconnectWhenOffline = new ReconnectWhenOffline();
-  String serverUrl;
-  Middleware middleware;
+  String ? serverUrl;
+  Middleware ? middleware;
   final List<OnConnectionChange> _onConnectionWithServerChangeListeners = [];
   Connection _connection = Connection.DISCONNECTED;
-  DisconnectionReason disconnectionReason;
+  DisconnectionReason ? disconnectionReason;
   Logger _logger = new Logger();
 
-  Internal._();
+  Internal._(){
+    if(!dependenciesHasBeenConfigured) {
+      configureDependencies('prod');
+    }
+  }
 
   static Internal get instance {
     if (Internal._instance == null)
       _instance = new Internal._();
-    return Internal._instance;
+    return Internal._instance!;
   }
 
 
   //Não pode ser acessado de fora do package:
-  void notifyConnectionChanged(Connection conn, {DisconnectionReason disconnectionReason}) {
+  void notifyConnectionChanged(Connection conn, {DisconnectionReason ? disconnectionReason}) {
     this._connection = conn;
     this._onConnectionWithServerChangeListeners.forEach((listener) => listener(conn));
     if(conn==Connection.DISCONNECTED)
       this.disconnectionReason = disconnectionReason ?? DisconnectionReason.UNDEFINED;
   }
 
-  logger({@required String message, Level level=Level.debug, additionalData}){
-    return _logger?.doLog(message, level, additionalData: additionalData);
+  logger({required String message, Level level=Level.debug, additionalData}){
+    return _logger.doLog(message, level, additionalData: additionalData);
+  }
+
+  void reset() {
+    assert(environment=='test');
+    AsklessClient._instance = _instance = null;
   }
 
 }
 
 class AsklessClient {
-  String _projectName;
+  String ? _projectName;
 
-  set projectName(String projectName){
+  set projectName(String ? projectName){
     this._projectName = projectName;
   }
 
   /// Name for this project (optional).
   /// If [!= null]: the field [projectName] on server side must have the same name (optional).
-  String get projectName => _projectName;
+  String ? get projectName => _projectName;
 
   ///The URL of the server, must start with [ws://] or [wss://].
-  String get serverUrl => Internal.instance.serverUrl;
+  String ? get serverUrl => Internal.instance.serverUrl;
 
   var _ownClientId;
-  Map<String, dynamic> _headers;
+  Map<String, dynamic> ? _headers;
 
   AsklessClient._();
 
-  static AsklessClient _instance;
+  static AsklessClient ? _instance;
 
   ///Askless client
   static AsklessClient get instance {
     if (AsklessClient._instance == null)
       _instance = new AsklessClient._();
-    return AsklessClient._instance;
+    return AsklessClient._instance!;
   }
 
   ///Get the status of the connection with the server.
   Connection get connection => Internal.instance._connection;
 
   ///May indicate the reason of no connection.
-  DisconnectionReason get disconnectReason => Internal.instance.disconnectionReason;
+  DisconnectionReason ? get disconnectReason => Internal.instance.disconnectionReason;
 
 
   /// Try perform a connection with the server.
@@ -183,7 +192,7 @@ class AsklessClient {
   ///       'Authorization' : 'TOKEN HERE'
   ///     });
   /// ```
-  Future<ResponseCli> connect({ownClientId, Map<String, dynamic> headers}) async {
+  Future<ResponseCli> connect({dynamic ownClientId , Map<String, dynamic> ? headers}) async {
     if(serverUrl == null)
       throw "You must call the method 'init' before 'connect'";
 
@@ -195,19 +204,19 @@ class AsklessClient {
     Internal.instance.disconnectionReason = null;
 
     if(Internal.instance.serverUrl != serverUrl)
-      Internal.instance.logger(message: "server: "+serverUrl, level: Level.info);
+      Internal.instance.logger(message: "server: "+(serverUrl??'null'), level: Level.info);
 
     if(Internal.instance.middleware==null || Internal.instance.serverUrl!=serverUrl || this._ownClientId != ownClientId){
       _disconnectAndClearByClient();
-      Internal.instance.middleware = new Middleware(serverUrl);
+      Internal.instance.middleware = new Middleware(serverUrl!);
     }else{
-      Internal.instance.middleware.ws.close();
-      Internal.instance.middleware.ws = null;
+      Internal.instance.middleware!.ws?.close();
+      Internal.instance.middleware!.ws = null;
     }
     this._ownClientId = ownClientId;
     this._headers = headers ?? {};
 
-    return  (await Internal.instance.middleware.performConnection(ownClientId: ownClientId, headers: headers));
+    return  (await Internal.instance.middleware!.performConnection(ownClientId: ownClientId, headers: headers));
   }
 
 
@@ -265,12 +274,12 @@ class AsklessClient {
   /// If [false]: the field [requestTimeoutInSeconds] defined in the server side
   /// will be the timeout.
   ///
-  Future<ResponseCli> create({@required String route, @required dynamic body, Map<String, dynamic> query, bool neverTimeout = false}) async {
+  Future<ResponseCli> create({required String route, required dynamic body, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
     assert(route!=null);
     assert(body!=null);
     await _assertHasMadeConnection();
 
-    return Internal.instance.middleware.runOperationInServer(new CreateCli(
+    return Internal.instance.middleware!.runOperationInServer(new CreateCli(
         route: route, body: body, query: query
     ), neverTimeout);
   }
@@ -289,12 +298,12 @@ class AsklessClient {
   /// If [false]: the field [requestTimeoutInSeconds] defined in the server side
   /// will be the timeout.
   ///
-  Future<ResponseCli> update({@required String route, @required dynamic body, Map<String, dynamic> query, bool neverTimeout = false}) async {
+  Future<ResponseCli> update({required String route, required dynamic body, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
     assert(route!=null);
     assert(body!=null);
     await _assertHasMadeConnection();
 
-    return Internal.instance.middleware.runOperationInServer(new UpdateCli(
+    return Internal.instance.middleware!.runOperationInServer(new UpdateCli(
         route: route, body: body, query: query), neverTimeout);
   }
 
@@ -321,12 +330,12 @@ class AsklessClient {
   ///        ).then((res) => print(res.isSuccess ? 'Success' : res.error.code));
   /// ```
   ///
-  Future<ResponseCli> delete({@required String route, @required Map<String, dynamic> query, bool neverTimeout = false}) async {
+  Future<ResponseCli> delete({required String route, required Map<String, dynamic> ? query, bool neverTimeout: false}) async {
     assert(route!=null);
     assert(query!=null);
     await _assertHasMadeConnection();
 
-    return Internal.instance.middleware.runOperationInServer(new DeleteCli(route: route, query: query), neverTimeout);
+    return Internal.instance.middleware!.runOperationInServer(new DeleteCli(route: route, query: query), neverTimeout);
   }
 
   /// Read data once.
@@ -359,11 +368,11 @@ class AsklessClient {
   ///         });
   /// ```
   ///
-  Future<ResponseCli> read({@required String route, Map<String, dynamic> query, bool neverTimeout = false}) async {
+  Future<ResponseCli> read({required String route, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
     assert(route!=null);
     await _assertHasMadeConnection();
 
-    return Internal.instance.middleware.runOperationInServer(new ReadCli(route: route, query: query), neverTimeout);
+    return Internal.instance.middleware!.runOperationInServer(new ReadCli(route: route, query: query), neverTimeout);
   }
 
   /// Get realtime data using [stream].
@@ -381,12 +390,12 @@ class AsklessClient {
   /// here can be added a filter to indicate to the server
   /// which data this client will receive.
   ///
-  Listening listen({@required String route,  Map<String, dynamic> query,}) {
+  Listening listen({required String route,  Map<String, dynamic> ? query,}) {
     assert(route!=null);
     _assertHasMadeConnection();
 
     final listen = new ListenCli(route: route, query: query, );
-    return Internal.instance.middleware.listen(listenCli: listen);
+    return Internal.instance.middleware!.listen(listenCli: listen);
   }
 
 
@@ -420,16 +429,14 @@ class AsklessClient {
   ///           }
   ///         );
   /// ```
-  FutureBuilder<ResponseCli> readAndBuild({@required String route, @required AsyncWidgetBuilder builder, Map<String, dynamic> query, dynamic initialData, Key key,}) {
-    assert(route!=null);
-    assert(builder!=null);
+  FutureBuilder<ResponseCli> readAndBuild({required String route, required AsyncWidgetBuilder builder, Map<String, dynamic> ? query, dynamic initialData, Key ? key,}) {
     _assertHasMadeConnection();
 
     return FutureBuilder(
       builder: builder,
       future: this.read(route: route, query: query, neverTimeout: true),
       initialData: initialData == null || initialData is ResponseCli ? initialData : new ResponseCli(
-        clientRequestId: null, //TODO: usar clientRequestId real
+        clientRequestId: 'none', //TODO: usar clientRequestId real
         output: initialData
       ),
       key: key ?? new GlobalKey(),
@@ -477,9 +484,7 @@ class AsklessClient {
   ///      //other widgets...
   /// ```
   ///
-  StreamBuilder<dynamic> listenAndBuild({@required String route, @required AsyncWidgetBuilder<dynamic> builder, dynamic initialData, Map<String, dynamic> query, Key key,}) {
-    assert(route!=null);
-    assert(builder!=null);
+  StreamBuilder<dynamic> listenAndBuild({required String route, required AsyncWidgetBuilder<dynamic> builder, dynamic initialData, Map<String, dynamic>? query, Key? key,}) {
     _assertHasMadeConnection();
 
     // ignore: close_sinks
@@ -525,14 +530,13 @@ class AsklessClient {
   /// [projectName] Name for this project (optional).
   /// If [!= null]: the field [projectName] on server side must have the same name (optional).
   ///
-  void init({@required serverUrl, Logger logger, String projectName}) {
-    assert(serverUrl!=null);
+  void init({required serverUrl, Logger? logger, String? projectName}) {
     assert(serverUrl.startsWith('ws:') || serverUrl.startsWith('wss:'));
     if(serverUrl.contains('192.168.') && !serverUrl.contains(':'))
       throw 'Please, inform the port on the serverUrl, default is 3000, example: ws://192.168.2.1:3000';
     Internal.instance.serverUrl = serverUrl;
     this._projectName = projectName;
-    Internal.instance._logger = logger;
+    Internal.instance._logger = logger ?? new Logger();
   }
 
   void _disconnectAndClearByClient() {
@@ -544,7 +548,7 @@ class AsklessClient {
 
 typedef OnDisconnect({RespondError error});
 
-/// Listening for new data from the server after call the method [listen].
+/// Listening for new data from the server after call the method [wsListen].
 ///
 /// [stream] Get realtime data from server.
 ///
@@ -556,7 +560,7 @@ typedef OnDisconnect({RespondError error});
 /// [close] Stop receiving realtime data from server using  [Listening.stream].
 ///
 class Listening {
-  /// Listening for new data from the server after call the method [listen].
+  /// Listening for new data from the server after call the method [wsListen].
   ///
   /// [stream] Get realtime data from server.
   ///
@@ -574,10 +578,10 @@ class Listening {
   final String _listenId;
   final VoidCallback _notifyMotherStreamThatChildStreamIsNotListeningAnymore;
 
-  Stream<NewDataForListener> stream;
+  late final Stream<NewDataForListener> stream;
   final StreamController<NewDataForListener> _streamController = new StreamController();
   final Stream<NewDataForListener> _superStream;
-  StreamSubscription<NewDataForListener> _subscription;
+  late final StreamSubscription<NewDataForListener> _subscription;
   bool _closeHasBeenCalled = false;
 
   Listening(this._superStream, this._clientRequestId, this._listenId, this._notifyMotherStreamThatChildStreamIsNotListeningAnymore){

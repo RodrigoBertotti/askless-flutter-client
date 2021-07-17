@@ -42,7 +42,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  item({@required Color color, @required name, @required isTapped}) {
+  item({required Color color, required name, required isTapped}) {
     final size = _getSizeContainer(name: name);
     return Row(
       children: <Widget>[
@@ -79,7 +79,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  _getSizeContainer({@required name}) {
+  _getSizeContainer({required name}) {
     if(_tapped==null)
       return {
         'width': MediaQuery.of(context).size.width / 2 - 10,

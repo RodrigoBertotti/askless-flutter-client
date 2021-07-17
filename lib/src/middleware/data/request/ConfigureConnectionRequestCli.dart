@@ -6,22 +6,24 @@ import '../../../constants.dart';
 
 
 class ConfigureConnectionRequestCli extends AbstractRequestCli{
-  static final type = '_class_type_configureconnectionrequest';
-  final _class_type_configureconnectionrequest = '_';
+  static const fieldType = '_class_type_configureconnectionrequest';
+  static const fieldHeaders = 'headers';
+  static const fieldClientId = 'clientId';
+  static const fieldClientType = 'clientType';
 
   Map<String,dynamic> headers;
-  final clientId;
-  final clientType = 'flutter';
+  String clientId;
+  String clientType = 'flutter';
 
   ConfigureConnectionRequestCli(this.clientId, this.headers) : super(RequestType.CONFIGURE_CONNECTION);
 
   @override
   Map<String, dynamic> toMap() {
     final map = super.toMap();
-    map[type] = '_';
-    map['headers'] = headers;
-    map['clientId'] = clientId;
-    map['clientType'] = clientType;
+    map[fieldType] = '_';
+    map[fieldHeaders] = headers;
+    map[fieldClientId] = clientId;
+    map[fieldClientType] = clientType;
     return map;
   }
 }

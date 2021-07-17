@@ -7,12 +7,12 @@ import '../index.dart';
 
 class ReconnectWhenOffline{
   final Connectivity _connectivityManager = Connectivity();
-  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
   int secondsToDisconnectWithoutPingFromClient = new ConnectionConfiguration().reconnectClientAfterSecondsWithoutServerPong;
-  ConnectivityResult _connectivity;
+  ConnectivityResult? _connectivity;
   bool _isFirstTime = true;
 
-  ConnectivityResult get connectivity => _connectivity;
+  ConnectivityResult? get connectivity => _connectivity;
 
   start(){
     stop();

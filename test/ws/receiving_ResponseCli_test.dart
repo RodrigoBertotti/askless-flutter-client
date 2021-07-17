@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:askless/askless.dart';
+import 'package:askless/src/dependency_injection/index.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/SendData.dart';
 import 'package:askless/src/middleware/index.dart';
@@ -12,7 +13,6 @@ import 'package:askless/src/middleware/receivements/ClientReceived.dart';
 import 'package:test/test.dart';
 
 void main(){
-
 
   test('ResponseCli should remove item from _pendingRequestsList and call the onResponse callback', () async {
 
@@ -24,10 +24,10 @@ void main(){
 
     Completer completer = new Completer();
 
-    Internal.instance.middleware.sendClientData.testAddPendingRequests(newTestRequest(listenCli3, (_){}));
-    Internal.instance.middleware.sendClientData.testAddPendingRequests(newTestRequest(listenCli2, (_){}));
-    Internal.instance.middleware.sendClientData.testAddPendingRequests(newTestRequest(listenCli1, (response){
-      expect(Internal.instance.middleware.sendClientData.testGetPendingRequestsList.length, equals(2));
+    Internal.instance.middleware!.sendClientData.testAddPendingRequests(newTestRequest(listenCli3, (_){}));
+    Internal.instance.middleware!.sendClientData.testAddPendingRequests(newTestRequest(listenCli2, (_){}));
+    Internal.instance.middleware!.sendClientData.testAddPendingRequests(newTestRequest(listenCli1, (response){
+      expect(Internal.instance.middleware!.sendClientData.testGetPendingRequestsList.length, equals(2));
       completer.complete();
     }));
 

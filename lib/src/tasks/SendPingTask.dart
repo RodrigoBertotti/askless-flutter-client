@@ -13,10 +13,10 @@ class SendPingTask extends TimedTask{
   @override
   void run() {
     List<ListeningTo> listeningTo = [];
-    Internal.instance.middleware.listeningTo.forEach((listen) {
+    Internal.instance.middleware!.listeningTo.forEach((listen) {
       listeningTo.add(new ListeningTo(clientRequestId:listen.clientRequestId, listenId: listen.listenId, route: listen.route, query: listen.query));
     });
-    Internal.instance.middleware?.sinkAdd(jsonEncode(new PingPong(listeningToRoutes: listeningTo).toMap())); //TODO: remover do lado web o que foi adicionado aqui?
+    Internal.instance.middleware?.sinkAdd(map: new PingPong(listeningToRoutes: listeningTo)); //TODO: remover do lado web o que foi adicionado aqui?
   }
 
 }

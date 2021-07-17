@@ -13,7 +13,6 @@ import 'package:test/test.dart';
 
 
 void main(){
-
   Internal.instance.middleware = new Middleware('test');
 
 
@@ -21,8 +20,8 @@ void main(){
       final listenCli1 = new ListenCli(route: '/abcd1', query: {});
       final listenCli2 = new ListenCli(route: '/abcd2', query: {});
 
-      Internal.instance.middleware.sendClientData.testAddPendingRequests(newTestRequest(listenCli1, (_){}));
-      Internal.instance.middleware.sendClientData.testAddPendingRequests(newTestRequest(listenCli2, (_){}));
+      Internal.instance.middleware!.sendClientData.testAddPendingRequests(newTestRequest(listenCli1, (_){}));
+      Internal.instance.middleware!.sendClientData.testAddPendingRequests(newTestRequest(listenCli2, (_){}));
 
       ClientReceived.from(jsonEncode(
           {
@@ -34,7 +33,7 @@ void main(){
           }
       )).handle();
 
-      expect(Internal.instance.middleware.sendClientData.testGetPendingRequestsList[0].serverReceived, equals(true));
-      expect(Internal.instance.middleware.sendClientData.testGetPendingRequestsList[1].serverReceived, equals(false));
+      expect(Internal.instance.middleware!.sendClientData.testGetPendingRequestsList[0].serverReceived, equals(true));
+      expect(Internal.instance.middleware!.sendClientData.testGetPendingRequestsList[1].serverReceived, equals(false));
   });
 }

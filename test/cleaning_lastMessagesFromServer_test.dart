@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:askless/src/constants.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/index.dart';
@@ -27,7 +26,7 @@ void setLastMessagesFromServer(int shouldKeep, int shouldRemove){
     'checkCleanOldMessagesFromServer will run only when lastMessagesFromServer.length is >= than '+ClientReceived.startCheckingLastMessagesFromServerAfterSize.toString()
   );
 
-  Internal.instance.middleware.lastMessagesFromServer.clear();
+  Internal.instance.middleware!.lastMessagesFromServer.clear();
 
   while(true){
     final lastServerMessage = new LastServerMessage('server_id'+(shouldKeep + shouldRemove).toString());
@@ -40,37 +39,38 @@ void setLastMessagesFromServer(int shouldKeep, int shouldRemove){
     }else{
       break;
     }
-    Internal.instance.middleware.lastMessagesFromServer.add(lastServerMessage);
+    Internal.instance.middleware!.lastMessagesFromServer.add(lastServerMessage);
   }
 }
 
 void main() {
+
   Internal.instance.middleware = new Middleware('test');
 
 
   test('checkCleanOldMessagesFromServer: lastMessagesFromServer.length should be 60 + 70 = 130', () {
     setLastMessagesFromServer(60, 70);
-    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(130));
+    expect(Internal.instance.middleware!.lastMessagesFromServer.length, equals(130));
 
-    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(130));
+    expect(Internal.instance.middleware!.lastMessagesFromServer.length, equals(130));
   });
 
 
   test('checkCleanOldMessagesFromServer lastMessagesFromServer.length should be 118', () {
     setLastMessagesFromServer(60, 70);
-    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(130));
+    expect(Internal.instance.middleware!.lastMessagesFromServer.length, equals(130));
 
     new _ClientReceivedTest().checkCleanOldMessagesFromServer(removeCount: 12);
 
-    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(118));
+    expect(Internal.instance.middleware!.lastMessagesFromServer.length, equals(118));
   });
 
   test('checkCleanOldMessagesFromServer lastMessagesFromServer.length should be 180', () {
     setLastMessagesFromServer(178, 12);
-    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(190));
+    expect(Internal.instance.middleware!.lastMessagesFromServer.length, equals(190));
 
     new _ClientReceivedTest().checkCleanOldMessagesFromServer(removeCount: 10);
 
-    expect(Internal.instance.middleware.lastMessagesFromServer.length, equals(180));
+    expect(Internal.instance.middleware!.lastMessagesFromServer.length, equals(180));
   });
 }

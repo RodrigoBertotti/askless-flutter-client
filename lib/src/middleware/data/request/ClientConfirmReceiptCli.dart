@@ -6,20 +6,19 @@ import '../../../constants.dart';
 
 
 class ClientConfirmReceiptCli extends AbstractRequestCli{
-  static final type = '_class_type_clientconfirmreceipt';
-  final _class_type_clientconfirmreceipt = '_';
+  static const fieldType = '_class_type_clientconfirmreceipt';
+  static const fieldServerId = 'serverId';
 
-  final String serverId;
+  String serverId;
 
   ClientConfirmReceiptCli(this.serverId) : super(RequestType.CONFIRM_RECEIPT);
 
   @override
   Map<String, dynamic> toMap() {
     final map = super.toMap();
-    map[type] = '_';
-    map['serverId'] = serverId;
+    map[fieldType] = '_';
+    map[fieldServerId] = serverId;
     return map;
   }
-
 
 }

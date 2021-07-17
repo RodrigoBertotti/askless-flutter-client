@@ -10,6 +10,7 @@ import '../constants.dart';
 import 'data/request/AbstractRequestCli.dart';
 import 'data/request/OperationRequestCli.dart';
 import 'data/receivements/ResponseCli.dart';
+import 'package:collection/collection.dart';
 
 typedef void OnResponseCallback(ResponseCli response);
 
@@ -30,8 +31,8 @@ class SendClientData {
 
   SendClientData(this.middleware);
 
-  removePendingRequests({String whereRequestType}){
-    List.from(_pendingRequestsList.where((req) => whereRequestType == null || whereRequestType.length==0 || req.data.requestType == whereRequestType))
+  removePendingRequests({RequestType? whereRequestType}){
+    List.from(_pendingRequestsList.where((req) => whereRequestType?.toString().isNotEmpty != true || req.data.requestType == whereRequestType))
         .forEach((req) {
       _lockPendingRequestsList.synchronized(() async {
         _pendingRequestsList.remove(req);
@@ -50,9 +51,7 @@ class SendClientData {
 
   void notifyServerResponse(ResponseCli response) {
     _lockPendingRequestsList.synchronized(() async {
-      final req = _pendingRequestsList.firstWhere(
-          (p) => p.data.clientRequestId == response.clientRequestId,
-          orElse: () => null);
+      final req = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == response.clientRequestId,);
       if (req != null) {
         _pendingRequestsList.remove(req);
         req.onResponse(response);
@@ -64,9 +63,7 @@ class SendClientData {
 
   void setAsReceivedPendingMessageThatServerShouldReceive(String clientRequestId) {
     _lockPendingRequestsList.synchronized(() async {
-      final pending = _pendingRequestsList.firstWhere(
-          (p) => p.data.clientRequestId == clientRequestId,
-          orElse: () => null);
+      final pending = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == clientRequestId,);
       pending?.serverReceived = true;
     });
   }
@@ -76,36 +73,34 @@ class SendClientData {
   Future<void> sendMessagesToServerAgain() async {
     // TODO? fazer como na web, parando o método caso if Internal.instance.connection == "DISCONNECTED"
 
-    List<_Request> copy;
+    late List<_Request> copy;
     await _lockPendingRequestsList.synchronized(() async {
       copy = []..addAll(this._pendingRequestsList);
     });
     for (final pendingRequest in copy) {
       if (!pendingRequest.serverReceived) {
-        final json = jsonEncode(pendingRequest.data.toMap());
-        this.middleware?.sinkAdd?.call(json); //TODO: remover do lado web o que foi adicionado aqui?
+        Internal.instance.middleware!.sinkAdd(map: pendingRequest.data); //TODO: remover do lado web o que foi adicionado aqui?
       }
     }
   }
 
-  Future<ResponseCli> runOperationInServer({@required AbstractRequestCli data, bool neverTimeout=false}) {
+  Future<ResponseCli> runOperationInServer({required AbstractRequestCli data, bool? neverTimeout}) {
+    if(neverTimeout==null){
+      neverTimeout = false;
+    }
 
-    final json = jsonEncode(data.toMap());
     Internal.instance.logger(message: 'Sending to Server...', level: Level.debug, additionalData: json);
-    this.middleware?.sinkAdd?.call(json); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
+    Internal.instance.middleware!.sinkAdd(map: data); //TODO? fazer tal como o lado web, verificando se o usuário NÃO está DESCONECTADO
 
     final completer = new Completer<ResponseCli>();
 
     final _Request request = new _Request(data, (response) {
       completer.complete(response);
     });
-    if (neverTimeout == false && Internal.instance.middleware.connectionConfiguration.requestTimeoutInSeconds > 0) {
-      Future.delayed(Duration(seconds: Internal.instance.middleware.connectionConfiguration.requestTimeoutInSeconds), () {
+    if (neverTimeout == false && Internal.instance.middleware!.connectionConfiguration.requestTimeoutInSeconds > 0) {
+      Future.delayed(Duration(seconds: Internal.instance.middleware!.connectionConfiguration.requestTimeoutInSeconds), () {
         _lockPendingRequestsList.synchronized(() async {
-          final remove = _pendingRequestsList.firstWhere(
-              (p) => p.data.clientRequestId == request.data.clientRequestId,
-              orElse: () => null
-          );
+          final remove = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == request.data.clientRequestId,);
           if (remove != null) {
             _pendingRequestsList.remove(remove);
             request.onResponse(new ResponseCli(
@@ -119,7 +114,7 @@ class SendClientData {
     }
 
     _lockPendingRequestsList.synchronized(() async {
-      if (Internal.instance.middleware.ws?.isReady == true){  //TODO analisar no lado do cliente JS
+      if (Internal.instance.middleware!.ws?.isReady == true){  //TODO analisar no lado do cliente JS
         addAsPending(request);
       } else {
         if (data.waitUntilGetServerConnection) {
@@ -129,10 +124,7 @@ class SendClientData {
           Internal.instance.logger(message: 'You can\'t send this message while not connected', level: Level.debug);
           request.onResponse(new ResponseCli(
               clientRequestId: data.clientRequestId,
-              error: RespondError(
-                  ReqErrorCode.NO_CONNECTION,
-                  'Maybe de device has no internet or the server is offline'
-              )
+              error: RespondError(ReqErrorCode.NO_CONNECTION, 'Maybe de device has no internet or the server is offline')
             )
           );
         }

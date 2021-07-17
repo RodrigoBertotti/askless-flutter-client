@@ -12,7 +12,7 @@ class ClientReceivedResponse extends ClientReceived{
   @override
   void implementation() {
     final responseCli = ResponseCli.fromMap(messageMap);
-    Internal.instance.middleware.sendClientData.notifyServerResponse(responseCli);
+    Internal.instance.middleware!.sendClientData.notifyServerResponse(responseCli);
   }
 
 

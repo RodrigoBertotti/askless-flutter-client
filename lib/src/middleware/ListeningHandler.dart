@@ -4,15 +4,15 @@ import 'package:askless/src/constants.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/index.dart';
 import 'package:flutter/material.dart';
-
+import 'package:collection/collection.dart';
 
 class ListeningHandler {
   final List<ClientListeningToRoute> listeningTo = [];
 
-  Listening listen({@required ListenCli listenCli}) {
+  Listening listen({required ListenCli listenCli}) {
     Internal.instance.logger(message: 'listen');
 
-    final alreadyListening = listeningTo.firstWhere((listenId) => listenId.hash == listenCli.hash, orElse: () => null);
+    final alreadyListening = listeningTo.firstWhereOrNull((listenId) => listenId.hash == listenCli.hash);
     if (alreadyListening != null) {
       return _getAlreadyListening(alreadyListening);
     } else {
@@ -27,12 +27,11 @@ class ListeningHandler {
   };
 
 
-  void _stopListening({@required String listenId}) {
+  void _stopListening({required String listenId}) {
     Internal.instance.logger(
         message:
         "stopListening started " + (listenId != null ? listenId : 'null'));
-    final sub = listeningTo.firstWhere((s) => s.listenId == listenId,
-        orElse: () => null);
+    final sub = listeningTo.firstWhereOrNull((s) => s.listenId == listenId);
     if (sub != null) {
       sub.counter--;
       if (sub.counter == 0) {
@@ -48,9 +47,10 @@ class ListeningHandler {
     Future.delayed(Duration(milliseconds: 500), () {
       try {
         alreadyListening.counter++;
-        if (alreadyListening.lastReceivementFromServer != null)
-          alreadyListening.streamController
-              .add(alreadyListening.lastReceivementFromServer);
+        if (alreadyListening.lastReceivementFromServer != null) {
+          alreadyListening.streamController.add(
+              alreadyListening.lastReceivementFromServer!);
+        }
       } catch (e) {
         if (!e.toString().contains('Bad state: Cannot add new events after calling close')) {
           throw e;
@@ -68,10 +68,7 @@ class ListeningHandler {
   }
 
   Listening _getNewListening(ListenCli listenCli) {
-    assert(listenCli.clientRequestId != null);
-
-    final String listenId = LISTEN_PREFIX +
-        listenCli.clientRequestId.substring(REQUEST_PREFIX.length);
+    final String listenId = LISTEN_PREFIX + listenCli.clientRequestId.substring(REQUEST_PREFIX.length);
     final streamController = new StreamController<NewDataForListener>.broadcast(); // ignore: close_sinks
     final listen = new ClientListeningToRoute(
         route: listenCli.route,
@@ -83,12 +80,12 @@ class ListeningHandler {
 
     listenCli.listenId = listen.listenId;
     listeningTo.add(listen);
-    Internal.instance.middleware.runOperationInServer(listenCli, null).then((response) {
+    Internal.instance.middleware!.runOperationInServer(listenCli).then((response) {
       if (response.error != null) {
-        streamController.sink.addError(response.error);
+        streamController.sink.addError(response.error!);
         Internal.instance.logger(
             message: 'could not listen',
-            additionalData: response.error.stack,
+            additionalData: response.error!.stack,
             level: Level.error);
       } else {
         Internal.instance.logger(message: 'now is listening to '+listenId+'!');
@@ -122,14 +119,16 @@ class ClientListeningToRoute {
   StreamController<NewDataForListener> streamController;
   final String hash;
   String listenId;
-  NewDataForListener lastReceivementFromServer;
+  NewDataForListener? lastReceivementFromServer;
   int counter = 1;
 
   ClientListeningToRoute(
-      {@required this.route,
-        @required this.query,
-        @required this.streamController,
-        @required this.clientRequestId,
-        @required this.hash,
-        @required this.listenId});
+      {required this.route,
+        required this.query,
+        required this.streamController,
+        required this.clientRequestId,
+        required this.hash,
+        required this.listenId
+      }
+  );
 }
