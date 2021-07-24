@@ -18,12 +18,9 @@ import 'package:collection/collection.dart';
 
 abstract class ClientReceived{
   final bool confirmToServerThatDataHasBeenReceived;
-  final dynamic messageMap;
+  final Map<String, dynamic> messageMap;
 
-  ClientReceived(this.messageMap, this.confirmToServerThatDataHasBeenReceived){
-    assert(messageMap!=null);
-    assert(!(messageMap is String));
-  }
+  ClientReceived(this.messageMap, this.confirmToServerThatDataHasBeenReceived);
 
   static int get startCheckingLastMessagesFromServerAfterSize => 100;
 
