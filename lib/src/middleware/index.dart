@@ -105,7 +105,7 @@ class Middleware with ListeningHandler {
     }
   }
 
-  void _handleClientGeneratedId(String ? ownClientId) {
+  void _handleClientGeneratedId(dynamic ownClientId) {
     if (ownClientId == null) {
       if (_clientGeneratedId == null) {
         _clientGeneratedId = CLIENT_GENERATED_ID_PREFIX + randomAlphaNumeric(15);

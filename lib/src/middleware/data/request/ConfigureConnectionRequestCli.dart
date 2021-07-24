@@ -12,7 +12,7 @@ class ConfigureConnectionRequestCli extends AbstractRequestCli{
   static const fieldClientType = 'clientType';
 
   Map<String,dynamic> headers;
-  String clientId;
+  dynamic clientId;
   String clientType = 'flutter';
 
   ConfigureConnectionRequestCli(this.clientId, this.headers) : super(RequestType.CONFIGURE_CONNECTION);
