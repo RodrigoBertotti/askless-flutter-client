@@ -80,7 +80,7 @@ class Logger{
   ///    );
   /// ```
   Logger({LoggerFunction ? customLogger, bool ? useDefaultLogger}){
-    final defaultLogger = useDefaultLogger == true || (useDefaultLogger != false && environment == 'test') ? _getDefaultLogger() : null;
+    final defaultLogger = useDefaultLogger == true ? _getDefaultLogger() : null;
 
     doLog = (String message, Level level, {additionalData})  {
       if(defaultLogger!=null)
