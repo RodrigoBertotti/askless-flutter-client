@@ -1,9 +1,12 @@
 import 'package:askless/askless.dart';
+import 'package:askless/src/dependency_injection/index.dart';
 import 'package:askless/src/index.dart';
 import 'package:test/test.dart';
 
 void main(){
   test('init', (){
+    configureDependencies('test');
+
     String? _message;
     final logger = new Logger(customLogger: (String message, Level level, {additionalData}){
       _message = message;

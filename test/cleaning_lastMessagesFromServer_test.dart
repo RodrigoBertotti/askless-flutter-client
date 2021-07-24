@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:askless/src/dependency_injection/index.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/index.dart';
 import 'package:askless/src/middleware/receivements/ClientReceived.dart';
@@ -43,6 +44,7 @@ void setLastMessagesFromServer(int shouldKeep, int shouldRemove){
 
 void main() {
 
+  configureDependencies('test');
   Internal.instance.middleware = new Middleware('test');
 
 

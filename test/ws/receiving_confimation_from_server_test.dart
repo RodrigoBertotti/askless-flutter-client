@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:askless/askless.dart';
+import 'package:askless/src/dependency_injection/index.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/SendData.dart';
 import 'package:askless/src/middleware/index.dart';
@@ -11,6 +12,8 @@ import 'package:test/test.dart';
 
 
 void main(){
+  configureDependencies('test');
+
   Internal.instance.middleware = new Middleware('test');
 
 
