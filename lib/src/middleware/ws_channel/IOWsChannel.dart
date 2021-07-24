@@ -1,16 +1,8 @@
 import 'dart:convert';
-
-import 'package:askless/askless.dart';
-import 'package:askless/src/dependency_injection/index.dart';
-import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/data/Mappable.dart';
-import 'package:askless/src/middleware/data/request/AbstractRequestCli.dart';
-import 'package:askless/src/middleware/receivements/ClientReceived.dart';
 import 'package:injectable/injectable.dart';
 import 'package:web_socket_channel/io.dart';
 import 'AbstractIOWsChannel.dart';
-import 'FakeIOWsChannel.dart';
-import 'package:meta/meta.dart';
 
 
 
@@ -48,7 +40,10 @@ class IOWsChannel extends AbstractIOWsChannel {
   }
 
   @override
-  void wsClose() => _channel?.sink.close();
+  void wsClose() {
+    _channel?.sink.close();
+    _channel = null;
+  }
 
   @override
   bool get isReady => _channel != null;

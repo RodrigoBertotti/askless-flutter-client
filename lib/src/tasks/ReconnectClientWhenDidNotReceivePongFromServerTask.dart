@@ -32,20 +32,15 @@ class ReconnectWhenDidNotReceivePongFromServerTask extends TimedTask{
       _isFirst = false;
       return;
     }
-    assert(_lastPongFromServerBeforeWasNull!=null);
 
-    if(Internal.instance==null) {
-      Internal.instance.logger(message: 'reconnectWhenDidNotReceivePongFromServerTask: Dove.instance==null', level: Level.error);
-      return;
-    }
     if(Internal.instance.middleware==null) {
-      Internal.instance.logger(message: 'reconnectWhenDidNotReceivePongFromServerTask: Dove.instance.middleware==null', level: Level.error);
+      logger(message: 'reconnectWhenDidNotReceivePongFromServerTask: Dove.instance.middleware==null', level: Level.error);
       return;
     }
 
     final lastPongFromServer = Internal.instance.middleware!.lastPongFromServer;
     if(Internal.instance.disconnectionReason!=DisconnectionReason.TOKEN_INVALID && ((lastPongFromServer == null && Internal.instance.middleware!.ws!=null && _lastPongFromServerBeforeWasNull) || (lastPongFromServer != null && lastPongFromServer + intervalInSeconds * 1000 < DateTime.now().millisecondsSinceEpoch))) {
-      Internal.instance.logger(message: 'reconnectWhenDidNotReceivePongFromServerTask reconnecting', level: Level.debug);
+      logger(message: 'reconnectWhenDidNotReceivePongFromServerTask reconnecting', level: Level.debug);
       AsklessClient.instance.reconnect();
     }
     _lastPongFromServerBeforeWasNull = lastPongFromServer == null;

@@ -15,6 +15,11 @@ class ReconnectWhenOffline{
   ConnectivityResult? get connectivity => _connectivity;
 
   start(){
+    if(noTasks){
+      logger(message: "Not starting ReconnectWhenOffline, because noTasks == true");
+      return;
+    }
+
     stop();
     Future.delayed(Duration(seconds: 1), (){
       _connectivitySubscription =
@@ -27,13 +32,13 @@ class ReconnectWhenOffline{
 
             if (conn == ConnectivityResult.none) {
               Internal.instance.notifyConnectionChanged(Connection.DISCONNECTED);
-              Internal.instance.logger(message: 'Lost internet connection', level: Level.debug);
+              logger(message: 'Lost internet connection', level: Level.debug);
             } else {
-              Internal.instance.logger(message: 'Got internet connection, reconnecting...', level: Level.debug);
+              logger(message: 'Got internet connection, reconnecting...', level: Level.debug);
               try{
                 AsklessClient.instance.reconnect();
               }catch(e){
-                 Internal.instance.logger(message: 'ReconnectWhenOffline', level:  Level.error, additionalData: e);
+                 logger(message: 'ReconnectWhenOffline', level:  Level.error, additionalData: e);
               }
             }
           });

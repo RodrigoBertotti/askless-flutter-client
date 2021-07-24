@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:askless/src/dependency_injection/index.dart';
 import 'package:askless/src/middleware/ListeningHandler.dart';
 import 'package:askless/src/middleware/data/Mappable.dart';
@@ -7,16 +6,10 @@ import 'package:askless/src/middleware/ws_channel/AbstractIOWsChannel.dart';
 import 'package:flutter/widgets.dart';
 import 'package:askless/askless.dart';
 import 'package:random_string/random_string.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:askless/src/middleware/SendData.dart';
-import 'package:askless/src/middleware/data/request/ClientConfirmReceiptCli.dart';
-import 'package:askless/src/middleware/data/request/OperationRequestCli.dart';
 import 'package:askless/src/middleware/data/request/ConfigureConnectionRequestCli.dart';
-import 'package:askless/src/middleware/data/receivements/NewRealtimeData.dart';
 import 'package:askless/src/middleware/data/receivements/RespondError.dart';
 import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
-import '../constants.dart';
-import '../index.dart';
 import '../constants.dart';
 import '../index.dart';
 import 'data/request/AbstractRequestCli.dart';
@@ -32,8 +25,8 @@ class Middleware with ListeningHandler {
   late final SendClientData sendClientData;
   ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
   final List<LastServerMessage> lastMessagesFromServer = [];
-  static String ? CLIENT_GENERATED_ID; // 1 por pessoa, dessa maneira a pessoa ainda pode obter a resposta caso desconectar e conectar novamente
-  VoidCallback disconnectAndClearOnDone = () {};
+  static String ? _clientGeneratedId; // 1 por pessoa, dessa maneira a pessoa ainda pode obter a resposta caso desconectar e conectar novamente
+  VoidCallback? disconnectAndClearOnDone;
   AbstractIOWsChannel ? ws;
 
   Middleware(this.serverUrl) {
@@ -52,7 +45,8 @@ class Middleware with ListeningHandler {
 
   Future<ResponseCli> performConnection(
       {ownClientId, Map<String, dynamic> ? headers}) async {
-    this._setOwnClientId(ownClientId);
+    
+    this._handleClientGeneratedId(ownClientId);
 
     Internal.instance.notifyConnectionChanged(Connection.CONNECTION_IN_PROGRESS);
 
@@ -63,19 +57,19 @@ class Middleware with ListeningHandler {
     ResponseCli response;
     bool tryAgain;
     do {
-      Internal.instance.logger(message: "middleware: connect");
+      logger(message: "middleware: connect");
 
       ws?.close();
       ws = getIt.get<AbstractIOWsChannel>(param1: serverUrl)..start();
 
       response = await sendClientData.runOperationInServer(
           data: new ConfigureConnectionRequestCli(
-              ownClientId != null ? ownClientId : CLIENT_GENERATED_ID,
+              ownClientId != null ? ownClientId : _clientGeneratedId,
               headers ?? new Map()
           )
       );
       if (response.error != null) {
-        Internal.instance.logger(
+        logger(
             message: "Data could not be sent, got an error",
             level: Level.error,
             additionalData:
@@ -111,15 +105,15 @@ class Middleware with ListeningHandler {
     }
   }
 
-  void _setOwnClientId(String ? ownClientId) {
+  void _handleClientGeneratedId(String ? ownClientId) {
     if (ownClientId == null) {
-      if (CLIENT_GENERATED_ID == null) {
-        CLIENT_GENERATED_ID = CLIENT_GENERATED_ID_PREFIX + randomAlphaNumeric(15);
-        Internal.instance.logger(message: "New client generated id: " + CLIENT_GENERATED_ID!);
+      if (_clientGeneratedId == null) {
+        _clientGeneratedId = CLIENT_GENERATED_ID_PREFIX + randomAlphaNumeric(15);
+        logger(message: "New client generated id: " + _clientGeneratedId!);
       } else {
-        Internal.instance.logger(
+        logger(
             message: "Using the same client generated id: " +
-                CLIENT_GENERATED_ID!);
+                _clientGeneratedId!);
       }
     }
   }
@@ -127,7 +121,7 @@ class Middleware with ListeningHandler {
   void disconnectAndClear({VoidCallback ? onDone}) {
     if (onDone != null)
       this.disconnectAndClearOnDone = onDone;
-    Internal.instance.logger(message: 'disconnectAndClear');
+    logger(message: 'disconnectAndClear');
 
     Internal.instance.notifyConnectionChanged(Connection.DISCONNECTED);
 

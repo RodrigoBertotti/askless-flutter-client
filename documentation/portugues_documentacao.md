@@ -36,14 +36,14 @@ e habilitar e desabilitar o logger padrão (opcional).
 ##### Parâmetros:
 
 ###### useDefaultLogger
-Se true: será utilizado o log padrão. Padrão: true.
+Se true: será utilizado o log padrão. Padrão: `false`.
 
 ###### customLogger
 Adicionar um novo logger, customizado.
 
 ##### Exemplo
 
-    Askless.instance.init(
+    AsklessClient.instance.init(
         projectName: 'MyApp',
         serverUrl: "ws://192.168.2.1:3000",
         logger: Logger(
@@ -75,7 +75,7 @@ para que o servidor seja capaz de aceitar ou recusar a tentativa de conexão (op
 
 ### Exemplo
 
-    final connectionResponse = await Askless.instance.connect(
+    final connectionResponse = await AsklessClient.instance.connect(
         ownClientId: 1,
         headers: {
             'Authorization': 'Bearer abcd'
@@ -85,7 +85,7 @@ para que o servidor seja capaz de aceitar ou recusar a tentativa de conexão (op
         print("Connected as me@example.com!");
     }else{
         print("Failed to connect, connecting again as unlogged user...");
-        Askless.instance.connect();
+        AsklessClient.instance.connect();
     }
 
 ### Aceitando ou recusando uma tentativa de conexão
@@ -103,7 +103,7 @@ que o usuário precisaria ficar informando o e-mail e senha toda vez que
 acessar a aplicação.
 
     // Não recomendado 
-    Askless.instance.connect(
+    AsklessClient.instance.connect(
         headers: {
           "email" : "me@example.com",
           "password": "123456"
@@ -120,7 +120,7 @@ Desta maneira, este token pode ser informado no campo `headers` de `connect`.
     
     // 'token' é um exemplo de uma rota no lado do servidor
     // que permite solicitar um token quando é informado um e-mail e senha
-    final loginResponse = await Askless.instance.create(
+    final loginResponse = await AsklessClient.instance.create(
         route: 'token',
         body: {
           'email' : 'me@example.com',
@@ -136,7 +136,7 @@ Desta maneira, este token pode ser informado no campo `headers` de `connect`.
 
       // Reconecte informando o `token` e `ownClientId`
       // obtidos na última resposta
-      final connectionResponse = await Askless.instance.connect(
+      final connectionResponse = await AsklessClient.instance.connect(
         ownClientId: loginResponse.output['ownClientId'],
         headers: {
           'Authorization' : loginResponse.output['Authorization']
@@ -146,7 +146,7 @@ Desta maneira, este token pode ser informado no campo `headers` de `connect`.
         print("Connected as me@example.com!");
       }else{
         print("Failed to connect, connecting again as unlogged user...");
-        Askless.instance.connect();
+        AsklessClient.instance.connect();
       }
     }
 
@@ -158,14 +158,14 @@ Onde pode ser chamado `init` e `connect`?
 `connect` 
  pode ser chamado várias vezes, visto que o usuário pode fazer login e logout.
 
-| Local                                                                                           |     `connect`      |       `init`       |
-| ----------------------------------------------------------------------------------------------: |:------------------:|:------------------:|
-| main.dart                                                                                       | :heavy_check_mark: | :heavy_check_mark: |
-| Quando o usuário faz login                                                                      | :heavy_check_mark: | :x:                |
-| Após um disconnect (exemplo: usuário fez logout) *                                              | :heavy_check_mark: | :x:                |
-| override `build` de um widget                                                                   | :x:                | :x:                |
-| override `init` de um widget qualquer compartilhado                                             | :x:                | :x:                |
-| override `init` de um widget que aparece apenas **uma vez**, quando o App é aberto              | :heavy_check_mark: | :heavy_check_mark: |
+| Local                                                                                                                                               |     `connect`      |       `init`       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------: |:------------------:|:------------------:|
+| main.dart                                                                                                                                           | :heavy_check_mark: | :heavy_check_mark: |
+| Quando o usuário faz login                                                                                                                          | :heavy_check_mark: | :x:                |
+| Após um disconnect (exemplo: usuário fez logout) *                                                                                                  | :heavy_check_mark: | :x:                |
+| override `build` de um widget                                                                                                                       | :x:                | :x:                |
+| override `init` de um widget qualquer compartilhado                                                                                                 | :x:                | :x:                |
+| override `init` de um widget que aparece apenas **uma única vez**, quando o App é aberto  (exemplo: em um arquivo `carregando_app.dart`)            | :heavy_check_mark: | :heavy_check_mark: |
 
 \* Após um logout, pode ser necessário que o usuário leia dados do servidor,
 por isso, mesmo após logout pode ser feito um `connect` com  
@@ -173,7 +173,7 @@ por isso, mesmo após logout pode ser feito um `connect` com
 
 ## `reconnect()` - Reconectando
 Reconecta com o servidor utilizando as mesmas credenciais da conexão
-anterior informados em `connect`.
+anteriores informadas em `connect`.
 
 Retorna o resultado da tentativa de reconexão.
  
@@ -216,14 +216,14 @@ Remove o `listener ` adicionado.
 
 #### Exemplo
  
-    Askless.instance
+    AsklessClient.instance
       .create(route: 'product',
         body: {
            'name' : 'Video Game',
            'price' : 500,
            'discount' : 0.1
         }
-      ).then((res) => print(res.isSuccess ? 'Success' : res.error.code));
+      ).then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
       
 
 ## `read(...)`
@@ -242,7 +242,7 @@ Remove o `listener ` adicionado.
 
 #### Exemplo
  
-    Askless.instance
+    AsklessClient.instance
         .read(route: 'allProducts',
             query: {
                 'nameContains' : 'game'
@@ -276,7 +276,7 @@ Remove o `listener ` adicionado.
     
     @override
     void initState() {
-      listeningForNewGamingProducts = Askless.instance
+      listeningForNewGamingProducts = AsklessClient.instance
           .listen(route: 'allProducts',
             query: {
               'nameContains' : 'game'
@@ -319,7 +319,7 @@ Remove o `listener ` adicionado.
 
 #### Exemplo
 
-    Askless.instance
+    AsklessClient.instance
         .update(
             route: 'allProducts',
             query: {
@@ -328,7 +328,7 @@ Remove o `listener ` adicionado.
             body: {
               'discount' : 0.8
             }
-        ).then((res) => print(res.isSuccess ? 'Success' : res.error.code));
+        ).then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
 
 ## `readAndBuild(...)`
  Obtém dados apenas uma vez e retorna um [FutureBuilder](https://api.flutter.dev/flutter/widgets/FutureBuilder-class.html)
@@ -349,7 +349,7 @@ Remove o `listener ` adicionado.
 ## Exemplo
 
     //other widgets...
-    Askless.instance
+    AsklessClient.instance
         .readAndBuild(
           route: 'product',
           query: {
@@ -385,7 +385,7 @@ Remove o `listener ` adicionado.
 #### Exemplo
 
     //other widgets...
-    Askless.instance
+    AsklessClient.instance
         .listenAndBuild(
           route: 'allProducts',
           builder: (context,  snapshot) {
@@ -418,13 +418,13 @@ Remove o `listener ` adicionado.
 
 #### Exemplo
 
-    Askless.instance
+    AsklessClient.instance
         .delete(
             route: 'product',
             query: {
               'id': 1
             },
-        ).then((res) => print(res.isSuccess ? 'Success' : res.error.code));
+        ).then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
 
 ---
 

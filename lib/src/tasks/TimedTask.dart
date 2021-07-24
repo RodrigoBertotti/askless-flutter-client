@@ -22,6 +22,10 @@ abstract class TimedTask{
   void run();
 
   void start(){
+    if(noTasks){
+      logger(message: "Not starting tasks, because noTasks == true");
+      return;
+    }
     _start();
   }
 
@@ -29,7 +33,7 @@ abstract class TimedTask{
     onStart();
     Future.delayed(Duration(milliseconds: 100), () async{
       if(runTask){
-        Internal.instance.logger(message:"Task '"+taskName+"' already started", level: Level.debug);
+        logger(message:"Task '"+taskName+"' already started", level: Level.debug);
         return;
       }
       runTask = true;

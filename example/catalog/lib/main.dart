@@ -19,10 +19,10 @@ class CatalogApp extends StatelessWidget {
 
     //IMPORTANT: DO NOT DO THIS IN PRODUCTION:
     final _debugCustomLogger = (String message, Level level, {additionalData}) {
-      final PREFIX = "> CatalogApp ["
+      final prefix = "> CatalogApp ["
           +level.toString().toUpperCase().substring(6)
           +"]: ";
-      print(PREFIX+message);
+      print(prefix+message);
       if(additionalData!=null)
         print(additionalData.toString());
     };

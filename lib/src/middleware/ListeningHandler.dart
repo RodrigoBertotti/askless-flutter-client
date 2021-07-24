@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:askless/askless.dart';
 import 'package:askless/src/constants.dart';
 import 'package:askless/src/index.dart';
-import 'package:askless/src/middleware/index.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
@@ -10,7 +9,7 @@ class ListeningHandler {
   final List<ClientListeningToRoute> listeningTo = [];
 
   Listening listen({required ListenCli listenCli}) {
-    Internal.instance.logger(message: 'listen');
+    logger(message: 'listen');
 
     final alreadyListening = listeningTo.firstWhereOrNull((listenId) => listenId.hash == listenCli.hash);
     if (alreadyListening != null) {
@@ -21,16 +20,16 @@ class ListeningHandler {
   }
 
   VoidCallback _getCallbackNotifyMotherStreamThatChildStreamIsNotListeningAnymore (String listenId) => () {
-    Internal.instance.logger(
+    logger(
         message: "notifyMotherStreamThatChildStreamIsNotListeningAnymore");
     this._stopListening(listenId: listenId);
   };
 
 
   void _stopListening({required String listenId}) {
-    Internal.instance.logger(
+    logger(
         message:
-        "stopListening started " + (listenId != null ? listenId : 'null'));
+        "stopListening started " + listenId);
     final sub = listeningTo.firstWhereOrNull((s) => s.listenId == listenId);
     if (sub != null) {
       sub.counter--;
@@ -43,7 +42,7 @@ class ListeningHandler {
   }
 
   Listening _getAlreadyListening(ClientListeningToRoute alreadyListening) {
-    Internal.instance.logger(message: 'alreadyListening');
+    logger(message: 'alreadyListening');
     Future.delayed(Duration(milliseconds: 500), () {
       try {
         alreadyListening.counter++;
@@ -55,7 +54,7 @@ class ListeningHandler {
         if (!e.toString().contains('Bad state: Cannot add new events after calling close')) {
           throw e;
         }else{
-          Internal.instance.logger(message: e.toString(), level: Level.debug);
+          logger(message: e.toString(), level: Level.debug);
         }
       }
     });
@@ -76,25 +75,27 @@ class ListeningHandler {
         streamController: streamController,
         clientRequestId: listenCli.clientRequestId,
         hash: listenCli.hash,
-        listenId: listenId);
+        listenId: listenId,
+    );
 
     listenCli.listenId = listen.listenId;
     listeningTo.add(listen);
     Internal.instance.middleware!.runOperationInServer(listenCli).then((response) {
       if (response.error != null) {
         streamController.sink.addError(response.error!);
-        Internal.instance.logger(
+        logger(
             message: 'could not listen',
             additionalData: response.error!.stack,
-            level: Level.error);
+            level: Level.error
+        );
       } else {
-        Internal.instance.logger(message: 'now is listening to '+listenId+'!');
+        logger(message: 'now is listening to '+listenId+'!');
       }
     });
     streamController.onCancel = () {
-      Internal.instance.logger(
+      logger(
           message: "listen onCancel listen = " +
-              (listen.listenId != null ? listen.listenId : 'null') +
+              listen.listenId +
               " hasListener: " +
               streamController.hasListener.toString());
       if (streamController.hasListener == false)

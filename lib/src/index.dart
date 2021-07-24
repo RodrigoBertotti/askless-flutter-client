@@ -32,7 +32,7 @@ LoggerFunction _getDefaultLogger() => (String message, Level level, {additionalD
   //if(level==Level.debug) //Logger padrão mostra apenas erros
   //  return;
 
-  final PREFIX = "> askless ["
+  final prefix = "> askless ["
 //      (showDateTime ? (
 //          NOW.year.toString()+"-"+
 //              NOW.month.toString()+"-"+
@@ -43,7 +43,7 @@ LoggerFunction _getDefaultLogger() => (String message, Level level, {additionalD
 //      ) : "")
       +level.toString().toUpperCase().substring(6)
       +"]: ";
-  print(PREFIX+message);
+  print(prefix+message);
   if(additionalData!=null) {
     print(additionalData.toString());
 //    try{
@@ -56,16 +56,16 @@ LoggerFunction _getDefaultLogger() => (String message, Level level, {additionalD
 class Logger{
   late final LoggerFunction doLog;
 
-  /// Allow customize the behavior of internal logs and enable/disable the default logger (optional).
+  /// Allow to customize the behavior of internal logs and enable/disable the default logger (optional).
   ///
-  /// [useDefaultLogger] If [true]: the default logger will be used (optional).
+  /// [useDefaultLogger] If [true]: the default logger will be used (optional). Default: `false`
   ///
   /// [customLogger]  Allows the implementation of a custom logger (optional).
   ///
   /// Example:
   ///
   /// ```
-  ///     Askless.instance.init(
+  ///     AsklessClient.instance.init(
   ///        projectName: 'MyApp',
   ///        serverUrl: "ws://192.168.2.1:3000",
   ///        logger: Logger(
@@ -80,7 +80,7 @@ class Logger{
   ///    );
   /// ```
   Logger({LoggerFunction ? customLogger, bool ? useDefaultLogger}){
-    final defaultLogger = (useDefaultLogger == true || (customLogger == null && useDefaultLogger == null)) ? _getDefaultLogger() : null;
+    final defaultLogger = useDefaultLogger == true || (useDefaultLogger != false && environment == 'test') ? _getDefaultLogger() : null;
 
     doLog = (String message, Level level, {additionalData})  {
       if(defaultLogger!=null)
@@ -135,7 +135,23 @@ class Internal {
     AsklessClient._instance = _instance = null;
   }
 
+  
 }
+
+// bool get allDelaysToZero => _allDelaysToZero;
+// set allDelaysToZero(bool allDelaysToZero) {
+//   if(environment == 'test') {
+//     _allDelaysToZero = allDelaysToZero;
+//   }
+// }
+// bool _allDelaysToZero = false;
+
+bool get noTasks => _noTasks;
+set noTasks(bool noTasks) {
+  assert(environment == 'test');
+  _noTasks = noTasks;
+}
+bool _noTasks = false;
 
 class AsklessClient {
   String ? _projectName;
@@ -172,7 +188,7 @@ class AsklessClient {
   DisconnectionReason ? get disconnectReason => Internal.instance.disconnectionReason;
 
 
-  /// Try perform a connection with the server.
+  /// Try to perform a connection with the server.
   ///
   /// [ownClientId]: The ID of the user defined in your application.
   /// This field must NOT be [null] when the user is logging in,
@@ -188,7 +204,7 @@ class AsklessClient {
   ///
   /// Example:
   /// ```
-  ///     Askless.instance.connect(ownClientId: 1, headers: {
+  ///     AsklessClient.instance.connect(ownClientId: 1, headers: {
   ///       'Authorization' : 'TOKEN HERE'
   ///     });
   /// ```
@@ -199,12 +215,12 @@ class AsklessClient {
     if (ownClientId != null && ownClientId.toString().startsWith(CLIENT_GENERATED_ID_PREFIX)) //Vai que o usuário insira um id manualmente desse tipo
       throw "ownClientId invalid: "+ownClientId;
 
-    Internal.instance.logger(message: "connecting...", level: Level.debug);
+    logger(message: "connecting...", level: Level.debug);
 
     Internal.instance.disconnectionReason = null;
 
     if(Internal.instance.serverUrl != serverUrl)
-      Internal.instance.logger(message: "server: "+(serverUrl??'null'), level: Level.info);
+      logger(message: "server: "+(serverUrl??'null'), level: Level.info);
 
     if(Internal.instance.middleware==null || Internal.instance.serverUrl!=serverUrl || this._ownClientId != ownClientId){
       _disconnectAndClearByClient();
@@ -222,7 +238,7 @@ class AsklessClient {
 
   ///Stop the connection with the server and clear the credentials [headers] and [ownClientId].
   void disconnect() {
-    Internal.instance.logger(message: "disconnect", level: Level.debug);
+    logger(message: "disconnect", level: Level.debug);
 
     _headers = null;
     _ownClientId = null;
@@ -255,7 +271,7 @@ class AsklessClient {
     if(_headers == null)
       throw "'reconnect' only can be called after a 'connect'";
 
-    Internal.instance.logger(message: "reconnect", level: Level.debug);
+    logger(message: "reconnect", level: Level.debug);
 
     return this.connect(headers: _headers, ownClientId: _ownClientId);
   }
@@ -275,7 +291,6 @@ class AsklessClient {
   /// will be the timeout.
   ///
   Future<ResponseCli> create({required String route, required dynamic body, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
-    assert(route!=null);
     assert(body!=null);
     await _assertHasMadeConnection();
 
@@ -299,7 +314,6 @@ class AsklessClient {
   /// will be the timeout.
   ///
   Future<ResponseCli> update({required String route, required dynamic body, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
-    assert(route!=null);
     assert(body!=null);
     await _assertHasMadeConnection();
 
@@ -321,17 +335,16 @@ class AsklessClient {
   ///
   /// Example
   /// ```
-  ///     Askless.instance
+  ///     AsklessClient.instance
   ///        .delete(
   ///            route: 'product',
   ///            query: {
   ///              'id': 1
   ///            },
-  ///        ).then((res) => print(res.isSuccess ? 'Success' : res.error.code));
+  ///        ).then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
   /// ```
   ///
   Future<ResponseCli> delete({required String route, required Map<String, dynamic> ? query, bool neverTimeout: false}) async {
-    assert(route!=null);
     assert(query!=null);
     await _assertHasMadeConnection();
 
@@ -355,7 +368,7 @@ class AsklessClient {
   /// Example
   ///
   /// ```
-  ///     Askless.instance
+  ///     AsklessClient.instance
   ///         .read(route: 'allProducts',
   ///             query: {
   ///                 'nameContains' : 'game'
@@ -369,7 +382,6 @@ class AsklessClient {
   /// ```
   ///
   Future<ResponseCli> read({required String route, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
-    assert(route!=null);
     await _assertHasMadeConnection();
 
     return Internal.instance.middleware!.runOperationInServer(new ReadCli(route: route, query: query), neverTimeout);
@@ -391,11 +403,9 @@ class AsklessClient {
   /// which data this client will receive.
   ///
   Listening listen({required String route,  Map<String, dynamic> ? query,}) {
-    assert(route!=null);
     _assertHasMadeConnection();
 
-    final listen = new ListenCli(route: route, query: query, );
-    return Internal.instance.middleware!.listen(listenCli: listen);
+    return Internal.instance.middleware!.listen(listenCli: new ListenCli(route: route, query: query, ));
   }
 
 
@@ -416,7 +426,7 @@ class AsklessClient {
   ///
   /// Example
   /// ```
-  ///      Askless.instance
+  ///      AsklessClient.instance
   ///         .readAndBuild(
   ///           route: 'product',
   ///           query: {
@@ -465,7 +475,7 @@ class AsklessClient {
   ///
   /// ```
   ///     //other widgets...
-  ///     Askless.instance
+  ///     AsklessClient.instance
   ///        .listenAndBuild(
   ///          route: 'allProducts',
   ///          builder: (context,  snapshot) {
@@ -514,7 +524,7 @@ class AsklessClient {
   Future<void> _assertHasMadeConnection() async {
     if(Internal.instance.middleware==null) {
       await this.connect();
-      Internal.instance.logger(message: 'You didn\'t call the method `connect` yet, so the connection will be made with null values for `ownClientId` and `headers` params', level: Level.warning);
+      logger(message: 'You didn\'t call the method `connect` yet, so the connection will be made with null values for `ownClientId` and `headers` params', level: Level.warning);
     }
 //        throw "You have not been connected yet, please, call the method connect before any operation in the server";
   }
@@ -525,7 +535,7 @@ class AsklessClient {
   ///
   /// [serverUrl] The URL of the server, must start with [ws://] or [wss://]. Example: [ws://192.168.2.1:3000].
   ///
-  /// [logger]  Allow customize the behavior of internal logs and enable/disable the default logger (optional).
+  /// [logger]  Allow to customize the behavior of internal logs and enable/disable the default logger (optional).
   ///
   /// [projectName] Name for this project (optional).
   /// If [!= null]: the field [projectName] on server side must have the same name (optional).
@@ -572,10 +582,10 @@ class Listening {
   /// [close] Stop receiving realtime data from server using  [Listening.stream].
   ///
 
-  final String _clientRequestId;
+  final String clientRequestId;
   //Um id gerado pelo cliente que representa
   //a troca de dados em tempo real entre o o cliente e uma sub-rota do servidor
-  final String _listenId;
+  final String listenId;
   final VoidCallback _notifyMotherStreamThatChildStreamIsNotListeningAnymore;
 
   late final Stream<NewDataForListener> stream;
@@ -584,7 +594,7 @@ class Listening {
   late final StreamSubscription<NewDataForListener> _subscription;
   bool _closeHasBeenCalled = false;
 
-  Listening(this._superStream, this._clientRequestId, this._listenId, this._notifyMotherStreamThatChildStreamIsNotListeningAnymore){
+  Listening(this._superStream, this.clientRequestId, this.listenId, this._notifyMotherStreamThatChildStreamIsNotListeningAnymore){
     stream = _streamController.stream;
     _subscription = _superStream.listen((event) {
       _streamController.add(event);
@@ -604,3 +614,5 @@ class Listening {
     this._notifyMotherStreamThatChildStreamIsNotListeningAnymore();
   }
 }
+
+void logger({required String message, Level level=Level.debug, additionalData}) => Internal.instance.logger(message: message, level: level, additionalData: additionalData);

@@ -9,7 +9,7 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  String _tapped;
+  String? _tapped;
   final Duration _containerAnimationDuration = Duration(seconds: 1);
   final Duration _titleAnimationDuration = Duration(milliseconds: 500);
   bool _loading = false;
@@ -54,7 +54,7 @@ class _SignInPageState extends State<SignInPage> {
                 AsklessClient.instance.disconnect();
                 AsklessClient.instance.connect(ownClientId: name).then((value){
                   Future.delayed(_containerAnimationDuration, () {
-                    Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => ConversationsPage(myName: _tapped,)), (route) => false);
+                    Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(builder: (context) => ConversationsPage(myName: _tapped!,)), (route) => false);
                   });
                 });
               });

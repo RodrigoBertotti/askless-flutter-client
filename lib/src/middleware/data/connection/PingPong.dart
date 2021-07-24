@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:askless/src/middleware/data/request/OperationRequestCli.dart';
-
 import '../Mappable.dart';
 
 class ListeningTo extends ListenCli{
@@ -27,7 +25,6 @@ class ListeningTo extends ListenCli{
 
 class PingPong implements Mappable{
   static const type = '_class_type_pingpong';
-  final _class_type_pingpong = '_';
 
   List<ListeningTo> listeningToRoutes;
 

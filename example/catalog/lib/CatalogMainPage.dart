@@ -11,15 +11,15 @@ class CatalogMainPage extends StatefulWidget {
 class _CatalogMainPageState extends State<CatalogMainPage> {
   TextEditingController _searchController = new TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  String search;
+  String search = '';
   final TextEditingController nameController = new TextEditingController();
   final TextEditingController priceController = new TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String selectedToken;
+  String? selectedToken;
   Connection _connection = Connection.DISCONNECTED;
-  OnConnectionChange _onConnectionChange;
-  String name;
-  int price;
+  late  OnConnectionChange _onConnectionChange;
+  late String name;
+  late int price;
 
 
 
@@ -65,7 +65,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
       final Product product = Product.fromMap(response.output);
       this.showSnackBar(success: 'Product ${product.name} removed');
     }else {
-      final err = response.error.code + ': ' + response.error.description;
+      final err = response.error!.code + ': ' + response.error!.description;
       this.showSnackBar(err: err.length > 100 ? "Occurred an error" : err);
       print(err);
     }
@@ -78,13 +78,14 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
       final Product product = Product.fromMap(response.output);
       this.showSnackBar(success: 'Product ${product.name} created with id=${product.id}');
     } else
-      this.showSnackBar(err: response.error.code + ': ' + response.error.description);
+      this.showSnackBar(err: response.error!.code + ': ' + response.error!.description);
   }
 
-  showSnackBar({String success, String err, Duration duration}) {
+  showSnackBar({String? success, String? err, Duration? duration}) {
+    assert(success!=null || err != null);
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
       content: Text(
-        success ?? err,
+        success ?? err!,
         style: TextStyle(color: Colors.white),
       ),
       backgroundColor: success != null ? Colors.green : Colors.red,
@@ -133,7 +134,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
         if (snapshots.error != null) {
           return Center(
             child: Text(
-              'listenAndBuild error: ' + snapshots.error.toString(),
+              'listenAndBuild error: ' + snapshots.error!.toString(),
               style: TextStyle(color: Colors.red),
             ),
           );
@@ -294,13 +295,13 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                             decoration: InputDecoration(hintText: 'Name'),
                             controller: nameController,
                             validator: (text) {
-                              if (text.length == 0) {
+                              if (text?.isNotEmpty != true) {
                                 return "Insert a name";
                               }
                               return null;
                             },
                             onSaved: (text) {
-                              name = text;
+                              name = text!;
                             },
                           ),
                           flex: 2,
@@ -317,14 +318,14 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                             controller: priceController,
                             validator: (text) {
                               try {
-                                int.parse(text);
+                                int.parse(text!);
                               } catch (e) {
                                 return "Invalid";
                               }
                               return null;
                             },
                             onSaved: (text) {
-                              price = int.parse(text);
+                              price = int.parse(text!);
                             },
                           ),
                         ),
@@ -335,8 +336,8 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                             icon: Icon(Icons.add),
                             label: Text('ADD'),
                             onPressed: () async {
-                              if (_formKey.currentState.validate()) {
-                                _formKey.currentState.save();
+                              if (_formKey.currentState?.validate() == true) {
+                                _formKey.currentState?.save();
 
                                 final response = await AsklessClient.instance.create(
                                   route: 'product',
@@ -345,13 +346,13 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                                 if (response.isSuccess) {
                                   this.showSnackBar(
                                       success: '$name created with success');
-                                  _formKey.currentState.reset();
+                                  _formKey.currentState?.reset();
                                 } else {
                                   this.showSnackBar(
                                       err: 'Failed to create $name (' +
-                                          response.error.code +
+                                          response.error!.code +
                                           ': ' +
-                                          response.error.description +
+                                          response.error!.description +
                                           ')',
                                       duration: Duration(seconds: 3));
                                 }
@@ -368,48 +369,6 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
             ),
           ),
         ));
-  }
-
-  //SET STATE PARECE SER A CAUSA DE NÃO MOSTRAR NOVOS DADOS NA TELA
-
-  Container _buildList({required AsyncSnapshot<dynamic> snapshots}) {
-    Widget child;
-    if (snapshots.error != null) {
-      child = Center(
-        child: Text(
-          'listenAndBuild error: ' + snapshots.error.toString(),
-          style: TextStyle(color: Colors.red),
-        ),
-      );
-    } else if (!snapshots.hasData) {
-      child = Center(
-        child: Text(
-          'No registered products',
-          style: TextStyle(color: Colors.grey),
-        ),
-      );
-    } else {
-      final productsList = Product.fromMapList(snapshots.data);
-      child = ListView.builder(
-          itemCount: productsList.length,
-          itemBuilder: (context, pos) {
-            final product = productsList[pos];
-            return ListTile(
-              title: Text(product.name),
-              trailing: GestureDetector(
-                child: Icon(Icons.clear),
-                onTap: () {
-                  removeProduct(id: product.id);
-                },
-              ),
-            );
-          });
-    }
-
-    return new Container(
-      child: child,
-      height: 285,
-    );
   }
 
   Widget _buildConnectAsAdmin(
@@ -440,7 +399,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
     );
   }
 
-  Color getConnectionColor(String token, Connection connection) {
+  Color getConnectionColor(String? token, Connection connection) {
     if (this.selectedToken != token)
       return Colors.grey;
 

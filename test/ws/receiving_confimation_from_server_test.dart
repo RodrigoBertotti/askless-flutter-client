@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'package:askless/askless.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/SendData.dart';
-import 'package:askless/src/middleware/data/request/ConfigureConnectionRequestCli.dart';
 import 'package:askless/src/middleware/index.dart';
 import 'package:askless/src/middleware/receivements/ClientReceived.dart';
-import 'package:askless/src/middleware/receivements/ClientReceivedServerConfirmReceipt.dart';
 import 'package:test/test.dart';
 
 
@@ -16,7 +14,7 @@ void main(){
   Internal.instance.middleware = new Middleware('test');
 
 
-  test('receiving ServerConfirmReceiptCli: pendingRequests should be set as serverReceived:true', (){
+  test('receiving_confimation_from_server_test: pendingRequests should be set as serverReceived:true', (){
       final listenCli1 = new ListenCli(route: '/abcd1', query: {});
       final listenCli2 = new ListenCli(route: '/abcd2', query: {});
 

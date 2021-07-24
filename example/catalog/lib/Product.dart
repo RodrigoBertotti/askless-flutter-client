@@ -1,10 +1,10 @@
 
 class Product{
-  int id;
-  String name;
-  int price;
+  late final int id;
+  late final String name;
+  late final int price;
 
-  Product({this.name, this.price});
+  Product({required this.name, required  this.price});
 
   Product.fromMap(Map<String,dynamic> map){
     this.id = map['id'];

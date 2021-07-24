@@ -4,7 +4,6 @@ import 'package:askless/src/middleware/data/receivements/ResponseCli.dart';
 
 class ConfigureConnectionResponseCli extends ResponseCli{
   static const typeResponse = '_class_type_configureconnection';
-  final _class_type_configureconnection = '_';
 
   ConfigureConnectionResponseCli.fromMap(messageMap) : super.fromMap(messageMap);
 

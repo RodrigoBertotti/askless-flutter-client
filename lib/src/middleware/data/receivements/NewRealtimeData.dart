@@ -3,7 +3,6 @@ import 'AbstractServerData.dart';
 
 class NewDataForListener extends AbstractServerData{
   static const type = '_class_type_newDataForListener';
-  final _class_type_newDataForListener = '_';
 
   late final dynamic output;
   late final String listenId;

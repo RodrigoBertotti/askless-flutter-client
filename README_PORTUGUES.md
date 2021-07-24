@@ -65,16 +65,16 @@ pubspec.yaml:
 
     import 'package:askless/askless.dart';
 
-5 - Inicialize o servidor com `Askless.instance.init(serverUrl:"ws://<IPV4>:<PORT>")` 
+5 - Inicialize o servidor com `AsklessClient.instance.init(serverUrl:"ws://<IPV4>:<PORT>")` 
 informando o endereço IPv4 da rede local obtido e a porta (padrão: 3000).
 
-6 - Realize a conexão com o servidor com `Askless.instance.connect()`
+6 - Realize a conexão com o servidor com `AsklessClient.instance.connect()`
     
 Exemplo:
 
     void main() {
-      Askless.instance.init(serverUrl:"ws://192.168.2.1:3000");
-      Askless.instance.connect();
+      AsklessClient.instance.init(serverUrl:"ws://192.168.2.1:3000");
+      AsklessClient.instance.connect();
       runApp(TrackingApp());
     }    
 
@@ -106,7 +106,7 @@ Exemplo:
 8 - Substitua `FIRST TODO` por um widget que realiza a leitura em tempo real
  de uma rota do servidor
  
-    Askless.instance
+    AsklessClient.instance
         .listenAndBuild(
             route: 'product/tracking',
             builder: (context,  snapshot) {
@@ -122,9 +122,9 @@ Exemplo:
     ElevatedButton(
         child: Text("I'm waiting", style: _textStyle,),
         onPressed: (){
-             Askless.instance
+             AsklessClient.instance
                 .create(route: 'product/customerSaid', body: 'I\'m waiting')
-                .then((res) => print(res.isSuccess ? 'Success' : res.error.code));
+                .then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
         },
     )
 

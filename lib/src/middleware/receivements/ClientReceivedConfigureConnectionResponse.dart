@@ -2,9 +2,8 @@ import 'package:askless/askless.dart';
 import 'package:askless/src/index.dart';
 import 'package:askless/src/middleware/data/receivements/ConfigureConnectionResponseCli.dart';
 import 'package:askless/src/middleware/receivements/ClientReceived.dart';
-
 import '../../constants.dart';
-import 'package:collection/collection.dart';
+import 'package:collection/collection.dart'; // ignore: unused_import
 
 class ClientReceivedConfigureConnectionResponse extends ClientReceived{
 
@@ -14,12 +13,12 @@ class ClientReceivedConfigureConnectionResponse extends ClientReceived{
   @override
   void implementation() {
     final serverConnectionReadyCli = ConfigureConnectionResponseCli.fromMap(messageMap);
-    Internal.instance.middleware!.sendClientData.notifyServerResponse(serverConnectionReadyCli);
+    Internal.instance.middleware!.sendClientData.notifyThatHasBeenReceivedServerResponse(serverConnectionReadyCli);
     connectionReady(serverConnectionReadyCli.connectionConfiguration);
   }
 
   void connectionReady(ConnectionConfiguration connectionConfiguration) {
-    Internal.instance.logger(message: 'connectionReady');
+    logger(message: 'connectionReady');
 
     Internal.instance.middleware!.connectionConfiguration = connectionConfiguration;
 
@@ -45,7 +44,7 @@ class ClientReceivedConfigureConnectionResponse extends ClientReceived{
     if (connectionConfiguration.incompatibleVersion) {
       Internal.instance.middleware!.disconnectAndClear();
       Internal.instance.disconnectionReason = DisconnectionReason.VERSION_CODE_NOT_SUPPORTED;
-      throw "Check if you server and client are updated! Your Askless version on server is ${connectionConfiguration.serverVersion}. Your Askless client version is ${CLIENT_LIBRARY_VERSION_NAME}";
+      throw "Check if you server and client are updated! Your Askless version on server is ${connectionConfiguration.serverVersion}. Your Askless client version is $CLIENT_LIBRARY_VERSION_NAME";
     }
 
     if (connectionConfiguration.differentProjectName) {

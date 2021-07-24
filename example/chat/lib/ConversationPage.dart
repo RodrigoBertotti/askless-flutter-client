@@ -25,8 +25,8 @@ class Test extends StatelessWidget {
 
 
 class ConversationsPage extends StatefulWidget {
-  bool _iAmGreen;
-  Color _myColor;
+  late final bool _iAmGreen;
+  late final Color _myColor;
   final String myName;
 
   ConversationsPage({required this.myName}){
@@ -40,13 +40,13 @@ class ConversationsPage extends StatefulWidget {
 
 class _ConversationsPageState extends State<ConversationsPage> with TickerProviderStateMixin {
 
-  Connection _connection;
+  late Connection _connection; // ignore: unused_field
   bool _hasTextToSend = false;
   final TextEditingController messageController = TextEditingController(text: '');
   final animatedListKey = GlobalKey<AnimatedListState>();
-  ScrollController controller;
+  late ScrollController controller;
   List messages = [];
-  Listening listening;
+  late Listening listening;
 
   _ConversationsPageState();
 
@@ -78,7 +78,7 @@ class _ConversationsPageState extends State<ConversationsPage> with TickerProvid
             final serverMessages = List.from(listen.output);
             serverMessages.forEach((message) {
               messages.add(message);
-              animatedListKey.currentState.insertItem(messages.length - 1);
+              animatedListKey.currentState?.insertItem(messages.length - 1);
 
               Future.delayed(Duration(milliseconds: 200), () {
                 controller.jumpTo(controller.position.maxScrollExtent);

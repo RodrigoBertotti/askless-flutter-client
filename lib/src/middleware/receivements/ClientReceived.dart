@@ -31,9 +31,9 @@ abstract class ClientReceived{
     if(data == 'pong' || data == 'welcome')
       return new ClientReceivedIgnore();
 
-    final messageMap = data is String ? jsonDecode(data) : data;
+    final Map<String,dynamic> messageMap = data is String ? jsonDecode(data) : data;
     if(messageMap[AbstractServerData.srvServerId]==null)
-      throw 'Unknown: '+messageMap;
+      throw 'Unknown: '+Map.from(messageMap).toString();
 
     if(messageMap[ConfigureConnectionResponseCli.typeResponse]!=null)
       return new ClientReceivedConfigureConnectionResponse(messageMap);
@@ -44,7 +44,7 @@ abstract class ClientReceived{
     if(messageMap[ResponseCli.type]!=null)
       return new ClientReceivedResponse(messageMap);
 
-    throw "TODO: "+messageMap;
+    throw "TODO: "+messageMap.toString();
   }
 
   void implementation();
@@ -61,7 +61,7 @@ abstract class ClientReceived{
 
     final LastServerMessage? dataAlreadySentByServerBefore = Internal.instance.middleware!.lastMessagesFromServer.firstWhereOrNull((m) => m.serverId == serverId);
     if(dataAlreadySentByServerBefore != null){
-      Internal.instance.logger(message: "handle, data already received: " + serverId);
+      logger(message: "handle, data already received: " + serverId);
       dataAlreadySentByServerBefore.messageReceivedAtSinceEpoch = DateTime.now().millisecondsSinceEpoch;
       return;
     }
@@ -75,7 +75,7 @@ abstract class ClientReceived{
 
   void checkCleanOldMessagesFromServer({int removeCount:10}) {
     if(Internal.instance.middleware!.lastMessagesFromServer.length > startCheckingLastMessagesFromServerAfterSize){
-      Internal.instance.logger(message: "Start of removing old messages received from server... (total: "+(Internal.instance.middleware!.lastMessagesFromServer.length.toString())+")");
+      logger(message: "Start of removing old messages received from server... (total: "+(Internal.instance.middleware!.lastMessagesFromServer.length.toString())+")");
       final List<LastServerMessage> remove = [];
       for(int i=Internal.instance.middleware!.lastMessagesFromServer.length-1; i >= 0 && remove.length < removeCount; i--){
         final messageReceivedFromServer = Internal.instance.middleware!.lastMessagesFromServer[i];
@@ -83,15 +83,15 @@ abstract class ClientReceived{
           remove.add(messageReceivedFromServer);
       }
       remove.forEach((element) => Internal.instance.middleware!.lastMessagesFromServer.remove(element));
-      Internal.instance.logger(message: "...end of removing old messages received from server (removed: "+(remove.length.toString())+")");
+      logger(message: "...end of removing old messages received from server (removed: "+(remove.length.toString())+")");
     }
   }
 
   void confirmReceiptToServer(String serverId) {
-    Internal.instance.logger(message: "confirmReceiptToServer " + serverId);
+    logger(message: "confirmReceiptToServer " + serverId);
 
     if(Internal.instance.middleware!.ws==null){
-      Internal.instance.logger(message: "ws==null", level: Level.error);
+      logger(message: "ws==null", level: Level.error);
     }
     Internal.instance.middleware!.sinkAdd(map: new ClientConfirmReceiptCli(serverId));
   }

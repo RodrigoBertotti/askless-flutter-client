@@ -26,6 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
           title: Text("Tracking"),
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: (){
                   AsklessClient.instance
                       .create(route: 'product/customerSaid', body: 'I\'m waiting')
-                      .then((res) => print(res.isSuccess ? 'Success' : res.error.code));
+                      .then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
                 },
               )],
           ),

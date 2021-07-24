@@ -1,11 +1,5 @@
-
-
-
 import 'dart:convert';
-
-import 'package:flutter/widgets.dart';
 import 'package:askless/src/middleware/data/request/AbstractRequestCli.dart';
-
 import '../../../constants.dart';
 
 abstract class ModifyCli extends AbstractRequestCli{
@@ -49,7 +43,7 @@ class CreateCli extends ModifyCli{
 class UpdateCli extends ModifyCli{
   UpdateCli({
     required String route,
-    required Map<String, dynamic> body,
+    required dynamic body,
     Map<String, dynamic> ? query
   }) : super(route, RequestType.UPDATE, body, query);
 
@@ -59,7 +53,7 @@ class DeleteCli extends ModifyCli{
   DeleteCli({
     required String route,
     Map<String, dynamic> ? query
-  }) : super(route, RequestType.DELETE, null, query);
+  }) : super(route, RequestType.DELETE, {}, query);
 }
 
 class ReadCli extends AbstractRequestCli{
@@ -116,12 +110,10 @@ class ListenCli extends AbstractRequestCli{
     return map;
   }
 
-  String get hash {
-    dynamic hash = toMap();
-    hash.remove(AbstractRequestCli.fieldClientRequestId);
-    hash.remove(ListenCli.fieldListenId);
-    hash = jsonEncode(hash);
-    return hash;
-  }
+  String get hash => jsonEncode({
+    fieldRoute: route,
+    fieldQuery: query,
+    AbstractRequestCli.fieldRequestType: requestType.toString().split('.').last,
+  });
 
 }

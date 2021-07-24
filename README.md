@@ -70,13 +70,13 @@ informing the server url with port (default: 3000).
 On the server side you can access the `myAsklessServer.localUrl` attribute
 to discover.
 
-6 - Perform the connection with `Askless.instance.connect()`
+6 - Perform the connection with `AsklessClient.instance.connect()`
     
 Example:
 
     void main() {
-      Askless.instance.init(serverUrl:"ws://192.168.2.1:3000");
-      Askless.instance.connect();
+      AsklessClient.instance.init(serverUrl:"ws://192.168.2.1:3000");
+      AsklessClient.instance.connect();
       runApp(TrackingApp());
     }    
 
@@ -109,7 +109,7 @@ Example:
 8 - Replace `FIRST TODO` by a widget that listen in realtime
 a route in the server
  
-    Askless.instance
+    AsklessClient.instance
         .listenAndBuild(
             route: 'product/tracking',
             builder: (context,  snapshot) {
@@ -125,9 +125,9 @@ a route in the server
     ElevatedButton(
         child: Text("I'm waiting", style: _textStyle,),
         onPressed: (){
-             Askless.instance
+             AsklessClient.instance
                 .create(route: 'product/customerSaid', body: 'I\'m waiting')
-                .then((res) => print(res.isSuccess ? 'Success' : res.error.code));
+                .then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
         },
     )
 
