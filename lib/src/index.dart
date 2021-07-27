@@ -195,7 +195,7 @@ class AsklessClient {
   /// otherwise must be [null] (optional).
   ///
   /// [headers]: Allows informing the token of the respective [ownClientId] (and/or additional data)
-  /// so that the server can be able to accept or recuse the connection attempt (optional).
+  /// so that the server can be able to accept or deny the connection attempt (optional).
   ///
   /// In the server side, you can implement [grantConnection](https://github.com/WiseTap/askless/blob/master/documentation/english_documentation.md#grantconnection)
   /// to accept or deny connections attempts from the client.
@@ -581,7 +581,6 @@ class Listening {
   ///
   /// [close] Stop receiving realtime data from server using  [Listening.stream].
   ///
-
   final String clientRequestId;
   //Um id gerado pelo cliente que representa
   //a troca de dados em tempo real entre o o cliente e uma sub-rota do servidor
@@ -604,7 +603,7 @@ class Listening {
     };
   }
 
-  /// Stop receiving realtime data from server using [stream]
+  /// Stop receiving realtime data from server using [Listening.stream].
   void close(){
     if(_closeHasBeenCalled)
       return;
