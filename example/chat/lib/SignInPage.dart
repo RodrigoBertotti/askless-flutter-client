@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:askless/askless.dart';
 
-import 'ConversationPage.dart';
+import '../ConversationPage.dart';
 
 class SignInPage extends StatefulWidget {
   @override
