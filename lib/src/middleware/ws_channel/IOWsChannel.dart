@@ -1,20 +1,19 @@
 import 'dart:convert';
 import 'package:askless/src/middleware/data/Mappable.dart';
 import 'package:injectable/injectable.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'AbstractIOWsChannel.dart';
-
 
 
 @Injectable(as: AbstractIOWsChannel, env: ['dev', 'prod'])
 class IOWsChannel extends AbstractIOWsChannel {
-  IOWebSocketChannel? _channel;
+  WebSocketChannel? _channel;
 
   IOWsChannel(@factoryParam String? serverUrl) : super(serverUrl ?? '');
 
   @override
   void wsConnect() {
-    _channel = IOWebSocketChannel.connect(serverUrl);
+    _channel = WebSocketChannel.connect(Uri.parse(serverUrl));
   }
 
   @override
