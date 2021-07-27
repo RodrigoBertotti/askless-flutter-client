@@ -1,4 +1,4 @@
-package dev.wisetap.askless.catalog
+package com.example.catalog
 
 import io.flutter.embedding.android.FlutterActivity
 

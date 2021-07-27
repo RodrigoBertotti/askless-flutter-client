@@ -168,7 +168,7 @@ Onde pode ser chamado `init` e `connect`?
 | override `init` de um widget que aparece apenas **uma única vez**, quando o App é aberto  (exemplo: em um arquivo `carregando_app.dart`)            | :heavy_check_mark: | :heavy_check_mark: |
 
 \* Após um logout, pode ser necessário que o usuário leia dados do servidor,
-por isso, mesmo após logout pode ser feito um `connect` com  
+por isso, mesmo após logout pode ser feito um `connect` com 
 `ownClientId` sendo `null`.
 
 ## `reconnect()` - Reconectando
@@ -276,6 +276,7 @@ Remove o `listener ` adicionado.
     
     @override
     void initState() {
+      super.initState();
       listeningForNewGamingProducts = AsklessClient.instance
           .listen(route: 'allProducts',
             query: {
@@ -288,7 +289,6 @@ Remove o `listener ` adicionado.
           print("New gaming product created: "+singleProduct['name']);
         });
       });
-      super.initState();
     }
       
     @override
@@ -342,7 +342,7 @@ Remove o `listener ` adicionado.
  `query` Dados adicionais (opcional), aqui pode ser adicionado um filtro para indicar ao
  o servidor quais dados esse cliente irá receber.
 
- `initialData` [Documentação oficial](https://api.flutter.dev/flutter/widgets/StreamBuilder/initialData.html) (opcional).
+ `initialData` [Documentação oficial](https://api.flutter.dev/flutter/widgets/FutureBuilder/initialData.html) (opcional).
 
  `key` [Documentação oficial](https://api.flutter.dev/flutter/foundation/Key-class.html) (opcional).
 
@@ -443,16 +443,17 @@ A resposta para uma operação no servidor
 
  Não use esse campo para verificar se houve um erro
  (pois pode ser null mesmo em caso de sucesso),
- em vez disso use  `isSuccess `.
+ em vez disso use `isSuccess `.
   
 #### `isSuccess`  
-Retorna  `true` se a resposta é um sucesso
+Retorna `true` se a resposta é um sucesso
 
 #### `error`  
  Se `isSuccess == false`: contém o erro da resposta
  
 ## `Listening`
-Observando dados do servidor após chamar `listen`.
+Observando novos dados a serem recebidos do servidor.
+É o retorno do método [listen](#listen).
 
 ## Campos
 ### `stream`
@@ -462,5 +463,5 @@ Obtém dados do servidor em tempo real.
 Exemplo: na implementação do `dispose` do Scaffold que usa essa stream.
 
 ### `close()`
-Encerra o envio de dados do servidor com a `stream`
+Encerra o envio de dados do servidor com a `Listening.stream`
 

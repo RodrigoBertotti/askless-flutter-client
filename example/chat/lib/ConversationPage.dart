@@ -53,6 +53,7 @@ class _ConversationsPageState extends State<ConversationsPage> with TickerProvid
 
   @override
   void initState() {
+    super.initState();
     _connection = AsklessClient.instance.connection;
     AsklessClient.instance.addOnConnectionChange((connection) {
       _connection=connection;
@@ -86,8 +87,6 @@ class _ConversationsPageState extends State<ConversationsPage> with TickerProvid
             });
           }
         );
-
-    super.initState();
   }
 
   keyboardIsClosed(BuildContext context) => MediaQuery.of(context).viewInsets.bottom == 0.0;

@@ -8,8 +8,8 @@ the server side in Node.js.
 
 
  ## Important links
- *  [Getting Started](../README.md): Regarding to the client in Flutter.
- *  [Getting Started (server)](https://github.com/WiseTap/askless): Regarding to the server in Node.js.
+ *  [Getting Started](../README.md): Askless Flutter Client.
+ *  [Getting Started (server)](https://github.com/WiseTap/askless): Askless back-end server in Node.js.
  *  [chat (example)](../example/chat): Chat between the colors blue and green.
  *  [catalog (example)](../example/catalog): Users adding and removing products from a catalog.
 
@@ -23,7 +23,7 @@ It's recommended to call `init` in the `main` method of the application.
 
 #### serverUrl
 
-The URL of the server, must start with `ws://` or `wss://`. Example: `ws://192.168.2.1:3000`.
+The URL of the server, must start with `ws://` or `wss://`. Example: `ws://192.168.0.3:3000`.
 
 #### projectName
  Name for this project. 
@@ -46,7 +46,7 @@ The URL of the server, must start with `ws://` or `wss://`. Example: `ws://192.1
 
     AsklessClient.instance.init(
         projectName: 'MyApp',
-        serverUrl: "ws://192.168.2.1:3000",
+        serverUrl: "ws://192.168.0.3:3000",
         logger: Logger(
             useDefaultLogger: false,
             customLogger: (String message, Level level, {additionalData}) {
@@ -62,9 +62,6 @@ The URL of the server, must start with `ws://` or `wss://`. Example: `ws://192.1
 
 Try to perform a connection with the server.
 
-In the server side, you can implement [grantConnection](https://github.com/WiseTap/askless/blob/master/documentation/english_documentation.md#grantconnection)
-to accept or deny connections attempts from the client.
-
 Returns the result of the connection attempt.
 
 ### Params
@@ -76,7 +73,7 @@ otherwise must be `null` (optional).
 
 #### `headers`
 Allows informing the token of the respective `ownClientId` (and/or additional data)
-so that the server can be able to accept or recuse the connection attempt (optional).
+so that the server can be able to accept or deny the connection attempt (optional).
 
 ### Example
 
@@ -96,7 +93,7 @@ so that the server can be able to accept or recuse the connection attempt (optio
 ### Accepting or rejecting a connection attempt
 
 On the server side, you can implement [grantConnection](https://github.com/WiseTap/askless/blob/master/documentation/english_documentation.md#grantconnection)
-to accept or refuse connection attempts from the client.
+to accept or deny connection attempts from the client.
 
 #### Best practices
 
@@ -113,7 +110,7 @@ and password in the `header` field of the `connect` method:
         }
     ); 
  
-But in this way the user would have to keep informing the e-mail and
+The problem of using this way is that the user would have to keep informing the e-mail and
 password every time that he wants to access the application.
 
 To avoid this, is **recommended** the creation of a route that allows 
@@ -293,6 +290,7 @@ Removes the added `listener `.
     
     @override
     void initState() {
+      super.initState();
       listeningForNewGamingProducts = AsklessClient.instance
           .listen(route: 'allProducts',
             query: {
@@ -305,7 +303,6 @@ Removes the added `listener `.
           print("New gaming product created: "+singleProduct['name']);
         });
       });
-      super.initState();
     }
       
     @override
@@ -363,7 +360,7 @@ Removes the added `listener `.
  here can be added a filter to indicate to the server
  which data this client will receive.
 
- `initialData` [Official documentation](https://api.flutter.dev/flutter/widgets/StreamBuilder/initialData.html) (optional).
+ `initialData` [Official documentation](https://api.flutter.dev/flutter/widgets/FutureBuilder/initialData.html) (optional).
 
  `key` [Official documentation](https://api.flutter.dev/flutter/foundation/Key-class.html) (optional).
 
@@ -387,7 +384,6 @@ Removes the added `listener `.
 ## `listenAndBuild(...)`
  Get realtime data through [StreamBuilder](https://api.flutter.dev/flutter/widgets/StreamBuilder-class.html).
 
- 
  Unlike the `listen` method, in `listenAndBuild`
  the stream will be closed automatically
  when this widget `dispose`.
@@ -476,7 +472,7 @@ The response of an operation in the server.
  Is the response error in case where `isSuccess == false`.
  
 ## `Listening`
-Listening for new data from the server after call the method `listen`.
+Listening for new data from the server. Is the return of the [listen](#listen) method.
 
 ## Fields
 
