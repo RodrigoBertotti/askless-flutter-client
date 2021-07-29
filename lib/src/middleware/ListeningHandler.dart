@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:askless/askless.dart';
 import 'package:askless/src/constants.dart';
+import 'package:askless/src/dependency_injection/index.dart';
 import 'package:askless/src/index.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
