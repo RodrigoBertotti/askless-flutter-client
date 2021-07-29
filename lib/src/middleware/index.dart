@@ -21,7 +21,6 @@ int get keepLastMessagesFromServerWithinMs => 10 * 60 * 1000;
 
 class Middleware with ListeningHandler {
   final String serverUrl;
-  int ? _lastPongFromServer;
   late final SendClientData sendClientData;
   ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
   final List<LastServerMessage> lastMessagesFromServer = [];
@@ -40,8 +39,6 @@ class Middleware with ListeningHandler {
         .sendClientData
         .runOperationInServer(data: requestCli, neverTimeout: neverTimeout);
   }
-
-  get lastPongFromServer => _lastPongFromServer;
 
   Future<ResponseCli> performConnection(
       {ownClientId, Map<String, dynamic> ? headers}) async {

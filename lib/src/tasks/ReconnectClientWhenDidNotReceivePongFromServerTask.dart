@@ -38,7 +38,7 @@ class ReconnectWhenDidNotReceivePongFromServerTask extends TimedTask{
       return;
     }
 
-    final lastPongFromServer = Internal.instance.middleware!.lastPongFromServer;
+    final lastPongFromServer = Internal.instance.middleware?.ws?.lastPongFromServer;
     if(Internal.instance.disconnectionReason!=DisconnectionReason.TOKEN_INVALID && ((lastPongFromServer == null && Internal.instance.middleware!.ws!=null && _lastPongFromServerBeforeWasNull) || (lastPongFromServer != null && lastPongFromServer + intervalInSeconds * 1000 < DateTime.now().millisecondsSinceEpoch))) {
       logger(message: 'reconnectWhenDidNotReceivePongFromServerTask reconnecting', level: Level.debug);
       AsklessClient.instance.reconnect();
