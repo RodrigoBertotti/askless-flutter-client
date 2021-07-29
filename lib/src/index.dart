@@ -439,7 +439,7 @@ class AsklessClient {
   ///           }
   ///         );
   /// ```
-  FutureBuilder<ResponseCli> readAndBuild({required String route, required AsyncWidgetBuilder builder, Map<String, dynamic> ? query, dynamic initialData, Key ? key,}) {
+  FutureBuilder<ResponseCli> readAndBuild({required String route, required AsyncWidgetBuilder<ResponseCli> builder, Map<String, dynamic> ? query, dynamic initialData, Key ? key,}) {
     _assertHasMadeConnection();
 
     return FutureBuilder(
