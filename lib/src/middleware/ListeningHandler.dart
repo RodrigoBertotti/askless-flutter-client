@@ -43,7 +43,7 @@ class ListeningHandler {
 
   Listening _getAlreadyListening(ClientListeningToRoute alreadyListening) {
     logger(message: 'alreadyListening');
-    Future.delayed(Duration(milliseconds: 500), () {
+    final _func = () {
       try {
         alreadyListening.counter++;
         if (alreadyListening.lastReceivementFromServer != null) {
@@ -57,7 +57,14 @@ class ListeningHandler {
           logger(message: e.toString(), level: Level.debug);
         }
       }
-    });
+    };
+
+    if(environment == 'test'){
+      _func();
+    } else {
+      Future.delayed(Duration(milliseconds: 500), _func);
+    }
+
     return Listening(
         alreadyListening.streamController.stream,
         alreadyListening.clientRequestId,

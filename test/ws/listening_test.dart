@@ -68,7 +68,7 @@ void main() {
       // assert(arrayWithDifferentDataLoop.length == 0);
     });
 
-    test('Multiple listen requests should be grouped together in the client side, so the server receives only one listen request"', () async {
+    test('identical listeners: several requests should be grouped together in the client side, so the server receives only one listen request', () async {
 
       FakeIOWsChannel.configure(
         simulateServerConfirmReceiptParam: true,
@@ -115,6 +115,40 @@ void main() {
       expect(await completer1c.future, 1);
       expect(await completer2c.future, 2);
       expect(await completer3b.future, 3);
+    });
+
+    test('identical listeners: the client should stop listening from the server when it no longer needs', () async {
+
+      FakeIOWsChannel.configure(
+        simulateServerConfirmReceiptParam: true,
+        simulateServerResponseWithOutputParam: (request, outputCallback) {
+          print('-------------- simulateServerResponseWithOutput_ ' + request.clientRequestId + '  ' + request.requestType.toString());
+          outputCallback(null);
+        },
+      );
+
+      final listening1a = AsklessClient.instance.listen(route: '/abc', query: {'test': 'test'});
+      final listening1b = AsklessClient.instance.listen(route: '/abc', query: {'test': 'test'});
+      expect(listening1a.clientRequestId, equals(listening1b.clientRequestId));
+      expect(Internal.instance.middleware!.listeningTo.length, equals(1));
+
+      listening1a.close();
+      _newListenData(listening1a.listenId, 1, 'serverId1');
+
+      expect((await listening1b.stream.first).output, equals(1));
+
+      listening1b.close();
+      _newListenData(listening1a.listenId, 2, 'serverId1');
+      try{
+        expect((await listening1b.stream.first).output, equals(2));
+      }catch(e){
+        expect(e.toString(), contains('Bad state'));
+      }
+
+      expect(Internal.instance.middleware!.listeningTo.length, equals(0));
+
+      final listening2a = AsklessClient.instance.listen(route: '/abc', query: {'test': 'test'});
+      expect(listening2a.clientRequestId, isNot(equals(listening1a.clientRequestId)));
     });
 
   });
