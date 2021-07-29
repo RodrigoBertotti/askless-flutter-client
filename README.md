@@ -38,7 +38,7 @@ This is the client side in Flutter,
 
 ## Getting Started
 
-![Alt Text](example/tracking/tracking.gif)
+![Alt Text](example/tracking/tracking-readme.gif)
 
 The "Getting Started" is a example of the Flutter client,
 an example is executed locally.

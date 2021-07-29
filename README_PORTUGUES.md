@@ -38,7 +38,7 @@ o lado servidor em Node.js.
 
 ## Começando
 
-![Alt Text](https://media.giphy.com/media/xDNd4CjRfJ1yHvRDGg/giphy.gif)
+![Alt Text](example/tracking/tracking-readme.gif)
 
 A seção "Começando" é uma seção exemplo do cliente em Flutter, 
 um exemplo é executado localmente.
