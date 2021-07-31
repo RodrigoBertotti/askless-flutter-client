@@ -3,7 +3,6 @@ import 'package:askless/askless.dart';
 import 'package:askless/src/constants.dart';
 import 'package:askless/src/dependency_injection/index.dart';
 import 'package:askless/src/index.dart';
-import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
 class ListeningHandler {
@@ -20,7 +19,7 @@ class ListeningHandler {
     }
   }
 
-  VoidCallback _getCallbackNotifyMotherStreamThatChildStreamIsNotListeningAnymore (String listenId) => () {
+  void Function() _getCallbackNotifyMotherStreamThatChildStreamIsNotListeningAnymore (String listenId) => () {
     logger(
         message: "notifyMotherStreamThatChildStreamIsNotListeningAnymore");
     this._stopListening(listenId: listenId);
