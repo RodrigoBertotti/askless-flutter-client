@@ -168,7 +168,7 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                   children: <Widget>[
                     GestureDetector(
                       child: Icon(Icons.remove, color: snapshot.data,),
-                      onTap: () => removeProduct(id: product.id),
+                      onTap: () => removeProduct(id: product.id!),
                     ),
                     Container(
                       width: 300,
@@ -230,32 +230,21 @@ class _CatalogMainPageState extends State<CatalogMainPage> {
                   height: 10,
                 ),
                 _buildConnectAsAdmin(ownClientId: 2, token: 'Bearer efgh'),
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10,),
                 _buildConnectAsAdmin(ownClientId: -1, token: 'Bearer wrong', wrongToken: true),
+                SizedBox(height: 10,),
 
 
+                Text('product/all'),
+                buildListenToProducts(route: 'product/all'),
 
+                SizedBox(height: 20,),
+                Text('product/all (duplicated)'),
+                buildListenToProducts(route: 'product/all'),
 
-              Padding(
-                child: buildListenToProducts(route: 'product/all'),
-                padding: EdgeInsets.only(top: 10),
-              ),
-
-                Padding(
-                  child: Column(
-                    children: [
-                      buildListenToProducts(route: 'product/all')
-                    ],
-                  ),
-                  padding: EdgeInsets.only(top: 10),
-                ),
-
-                Padding(
-                  child: buildListenToProducts(route: 'product/all/reversed'),
-                  padding: EdgeInsets.only(top: 10),
-                ),
+                SizedBox(height: 20,),
+                Text('product/all/reversed'),
+                buildListenToProducts(route: 'product/all/reversed'),
 
                 SizedBox(height: 20,),
 

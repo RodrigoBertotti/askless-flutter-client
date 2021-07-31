@@ -1,6 +1,6 @@
 
 class Product{
-  late final int id;
+  int? id;
   late final String name;
   late final int price;
 
