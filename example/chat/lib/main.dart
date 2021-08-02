@@ -3,7 +3,7 @@ import 'package:askless/askless.dart';
 import 'SignInPage.dart';
 
 
-final String ipv4Address = '192.168.2.1';
+final String ipv4Address = '192.168.0.3';
 final serverUrl = 'ws://'+ipv4Address+':3000';
 
 void main() {

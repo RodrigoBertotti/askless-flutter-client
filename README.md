@@ -61,7 +61,7 @@ pubspec.yaml:
         sdk: flutter
         
       # Add this line:
-      askless: ^1.0.1
+      askless: ^2.0.0
 
 4 - Import the package
 

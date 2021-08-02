@@ -56,7 +56,7 @@ LoggerFunction _getDefaultLogger() => (String message, Level level, {additionalD
 class Logger{
   late final LoggerFunction doLog;
 
-  /// Allow to customize the behavior of internal logs and enable/disable the default logger (optional).
+  /// Allow to customize the behavior of internal logs and enable the default logger (optional).
   ///
   /// [useDefaultLogger] If [true]: the default logger will be used (optional). Default: `false`
   ///
@@ -190,17 +190,14 @@ class AsklessClient {
 
   /// Try to perform a connection with the server.
   ///
+  /// Returns the result of the connection attempt.
+  ///
   /// [ownClientId]: The ID of the user defined in your application.
   /// This field must NOT be [null] when the user is logging in,
   /// otherwise must be [null] (optional).
   ///
   /// [headers]: Allows informing the token of the respective [ownClientId] (and/or additional data)
   /// so that the server can be able to accept or deny the connection attempt (optional).
-  ///
-  /// In the server side, you can implement [grantConnection](https://github.com/WiseTap/askless/blob/master/documentation/english_documentation.md#grantconnection)
-  /// to accept or deny connections attempts from the client.
-  ///
-  /// Returns the result of the connection attempt.
   ///
   /// Example:
   /// ```
@@ -290,6 +287,17 @@ class AsklessClient {
   /// If [false]: the field [requestTimeoutInSeconds] defined in the server side
   /// will be the timeout.
   ///
+  /// Example
+  /// ```
+  ///     AsklessClient.instance
+  ///       .create(route: 'product',
+  ///         body: {
+  ///            'name' : 'Video Game',
+  ///            'price' : 500,
+  ///            'discount' : 0.1
+  ///         }
+  ///       ).then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
+  /// ```
   Future<ResponseCli> create({required String route, required dynamic body, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
     assert(body!=null);
     await _assertHasMadeConnection();
@@ -313,6 +321,19 @@ class AsklessClient {
   /// If [false]: the field [requestTimeoutInSeconds] defined in the server side
   /// will be the timeout.
   ///
+  /// Example
+  /// ```
+  ///     AsklessClient.instance
+  ///         .update(
+  ///             route: 'allProducts',
+  ///             query: {
+  ///               'nameContains' : 'game'
+  ///             },
+  ///             body: {
+  ///               'discount' : 0.8
+  ///             }
+  ///         ).then((res) => print(res.isSuccess ? 'Success' : res.error!.code));
+  /// ```
   Future<ResponseCli> update({required String route, required dynamic body, Map<String, dynamic> ? query, bool neverTimeout: false}) async {
     assert(body!=null);
     await _assertHasMadeConnection();
@@ -366,7 +387,6 @@ class AsklessClient {
   /// will be the timeout.
   ///
   /// Example
-  ///
   /// ```
   ///     AsklessClient.instance
   ///         .read(route: 'allProducts',
@@ -402,6 +422,38 @@ class AsklessClient {
   /// here can be added a filter to indicate to the server
   /// which data this client will receive.
   ///
+  /// Example
+  /// ```
+  ///     Listening listeningForNewGamingProducts;
+  ///
+  ///     @override
+  ///     void initState() {
+  ///       super.initState();
+  ///       listeningForNewGamingProducts = AsklessClient.instance
+  ///           .listen(route: 'allProducts',
+  ///             query: {
+  ///               'nameContains' : 'game'
+  ///             },
+  ///           );
+  ///       listeningForNewGamingProducts.stream.listen((newRealtimeData) {
+  ///         List products = newRealtimeData.output;
+  ///         products.forEach((singleProduct) {
+  ///           print("New gaming product created: "+singleProduct['name']);
+  ///         });
+  ///       });
+  ///     }
+  ///
+  ///     @override
+  ///     void dispose() {
+  ///
+  ///       // IMPORTANT
+  ///       // don't forget to close the stream
+  ///       // to stop receiving data from the server
+  ///       listeningForNewGamingProducts.close();
+  ///
+  ///       super.dispose();
+  ///     }
+  /// ```
   Listening listen({required String route,  Map<String, dynamic> ? query,}) {
     _assertHasMadeConnection();
 
@@ -535,7 +587,7 @@ class AsklessClient {
   ///
   /// [serverUrl] The URL of the server, must start with [ws://] or [wss://]. Example: [ws://192.168.2.1:3000].
   ///
-  /// [logger]  Allow to customize the behavior of internal logs and enable/disable the default logger (optional).
+  /// [logger]  Allow to customize the behavior of internal logs and enable the default logger (optional).
   ///
   /// [projectName] Name for this project (optional).
   /// If [!= null]: the field [projectName] on server side must have the same name (optional).
@@ -567,7 +619,7 @@ typedef OnDisconnect({RespondError error});
 /// Example: in [dispose] implementation of Scaffold
 /// that uses this stream.
 ///
-/// [close] Stop receiving realtime data from server using  [Listening.stream].
+/// [close] Stop receiving realtime data from server using [Listening.stream].
 ///
 class Listening {
   /// Listening for new data from the server after call the method [wsListen].
@@ -579,7 +631,7 @@ class Listening {
   /// Example: in [dispose] implementation of Scaffold
   /// that uses this stream.
   ///
-  /// [close] Stop receiving realtime data from server using  [Listening.stream].
+  /// [close] Stop receiving realtime data from server using [Listening.stream].
   ///
   final String clientRequestId;
   //Um id gerado pelo cliente que representa

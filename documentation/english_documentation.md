@@ -31,7 +31,7 @@ The URL of the server, must start with `ws://` or `wss://`. Example: `ws://192.1
 
 #### logger
 
- Allow to customize the behavior of internal logs and enable/disable the default logger (optional).
+ Allow to customize the behavior of internal logs and enable the default logger (optional).
 
 #####  Params:
   

@@ -1,3 +1,15 @@
+# 2.0.0
+- dart sdk updated: >=2.12.0 <3.0.0 (null safety)
+- web support
+- useDefaultLogger: default as false 
+- fix: accepting non-maps types on the "body" field of an update request
+- other adjustments/fixes
+- documentation and README changes
+- code refactoring 
+- unit tests added
+- examples updated to null safety
+- new dependencies in pubspec.yaml
+
 ## 1.0.1
 
 - Fix: prevent old connections data from getting in the way of the last successful connection attempt
