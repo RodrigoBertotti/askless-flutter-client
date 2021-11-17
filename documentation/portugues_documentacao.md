@@ -400,7 +400,7 @@ Remove o `listener ` adicionado.
                 children: listOfProductsNames,
               );
             }
-          );
+          ),
     //other widgets...
   
 ## `delete(...)`
