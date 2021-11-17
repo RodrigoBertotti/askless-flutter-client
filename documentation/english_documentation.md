@@ -420,7 +420,7 @@ Removes the added `listener `.
                 children: listOfProductsNames,
               );
             }
-          );
+          ),
     //other widgets...
   
 ## `delete(...)`
