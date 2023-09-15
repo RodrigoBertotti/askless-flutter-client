@@ -1,0 +1,22 @@
+name: simple_chat
+description: An example of the framework's use
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_url_image_load_fail: ^1.0.0
+  askless:
+    path: ../../
+
+
+flutter:
+  uses-material-design: true
+
+

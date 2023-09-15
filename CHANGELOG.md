@@ -1,3 +1,10 @@
+# 3.0.0
+Askless was redesigned and is even better! So you can build your App and backend like a pro!
+- Several bug fixes
+- A new way of building real-time Apps
+- Askless now allows you to elevate your App by adding video and audio calls to your Flutter App! 
+Please follow the [documentation](./documentation.md) to check all changes
+
 # 2.0.0
 - dart sdk updated: >=2.12.0 <3.0.0 (null safety)
 - web support

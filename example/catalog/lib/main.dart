@@ -1,42 +1,22 @@
-import 'package:askless/askless.dart';
 import 'package:flutter/material.dart';
-import 'CatalogMainPage.dart';
+import 'package:askless/index.dart';
+import 'catalog_main_page.dart';
 
 
-final String ipv4Address = '192.168.0.3';
-final serverUrl = 'ws://'+ipv4Address+':3000';
-
+final serverUrl = ''; // TODO: <-- replace with your nodejs backend URL here like:
+// const serverUrl = 'ws://192.168.0.8:3000';
 
 void main() {
-  runApp(CatalogApp());
+  assert(serverUrl.isNotEmpty, "replace \"serverUrl\" with your nodejs backend URL like: 'ws://192.168.0.8:3000'");
+  AsklessClient.instance.start(
+    serverUrl: serverUrl,
+    debugLogs: false,
+  );
+  runApp(const CatalogApp());
 }
 
-const isProduction = false;
-
 class CatalogApp extends StatelessWidget {
-
-  CatalogApp() {
-
-    //IMPORTANT: DO NOT DO THIS IN PRODUCTION:
-    final _debugCustomLogger = (String message, Level level, {additionalData}) {
-      final prefix = "> CatalogApp ["
-          +level.toString().toUpperCase().substring(6)
-          +"]: ";
-      print(prefix+message);
-      if(additionalData!=null)
-        print(additionalData.toString());
-    };
-
-    AsklessClient.instance.init(
-        serverUrl: serverUrl,
-        logger: Logger(
-            customLogger: isProduction ? null : _debugCustomLogger // DO NOT DO SHOW ASKLESS LOGS ON THE CONSOLE ON A PRODUCTION ENVIRONMENT
-        ),
-        projectName: 'catalog'
-    );
-    AsklessClient.instance.connect();
-
-  }
+  const CatalogApp({super.key});
 
   @override
   Widget build(BuildContext context) {
