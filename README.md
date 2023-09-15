@@ -12,7 +12,7 @@ This is the Flutter side,
 
 Check the example of a Flutter Chat App with PostgreSQL / MySQL databases. Supports video and audio calls.
 
-[//]: # (TODO VIDEO)
+https://github.com/RodrigoBertotti/askless-flutter-client/assets/15431956/9c4ee12e-4ef4-4e8d-81dd-6a88d460d3d9
 
 ## Why Askless?
 
