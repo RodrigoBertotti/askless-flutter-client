@@ -113,7 +113,7 @@ class ConnectionService {
       getIt.get<SendPingTask>().changeInterval(connectionConfiguration.intervalInMsClientPing);
       getIt.get<ReconnectWhenDidNotReceivePongFromServerTask>().changeInterval(connectionConfiguration.reconnectClientAfterMillisecondsWithoutServerPong);
 
-      print ("------------------- _configureConnection ------------------");
+      logger ("configureConnection ok");
       notifyConnectionChanged(ConnectionStatus.connected);
 
       Future.delayed(const Duration(seconds: 1), (){
@@ -172,7 +172,7 @@ class ConnectionService {
   }
 
   Stream<ConnectionDetails> streamConnectionChanges({bool immediately = false}) {
-      if (immediately) {
+    if (immediately) {
       Future.delayed(const Duration(milliseconds: 50), () {
         _connectionWithServerChangesStreamController.add(
             ConnectionDetails(_connectionStatus, disconnectionReason));
@@ -183,6 +183,9 @@ class ConnectionService {
 
   //Não pode ser acessado de fora do package:
   void notifyConnectionChanged(ConnectionStatus conn, {DisconnectionReason ? disconnectionReason}) async {
+    logger("notifyConnectionChanged: ${conn.toString()}");
+
+    assert(conn != ConnectionStatus.connected || connectionConfiguration.isFromServer, "\"connect\" status is only when connectionConfiguration is received from server");
     if (conn == _connectionStatus) {
       return;
     }

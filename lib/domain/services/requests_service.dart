@@ -34,7 +34,7 @@ class RequestsService {
     List.from(_pendingRequestsList.where((req) => whereRequestType?.toString().isNotEmpty != true || req.data.requestType == whereRequestType))
         .forEach((req) {
       // _lockPendingRequestsList.synchronized(() async {
-        _pendingRequestsList.remove(req);
+      _pendingRequestsList.remove(req);
       // });
     });
   }
@@ -46,22 +46,22 @@ class RequestsService {
 
   void notifyThatHasBeenReceivedServerResponse(InternalAsklessResponseEntity response) {
     // _lockPendingRequestsList.synchronized(() async {
-      final req = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == response.clientRequestId,);
-      if (req != null) {
-        logger("${req.data.getRoute() ?? ''}: response received!: ${response.success} ${response.error?.code}");
-        req.onResponse(response);
-        _pendingRequestsList.remove(req);
-      } else {
-        logger(response.clientRequestId.toString());
-        logger("Response received, but did nothing, probably because the request timed out before. clientRequestId: ${response.clientRequestId}", level: Level.debug);
-      }
+    final req = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == response.clientRequestId,);
+    if (req != null) {
+      logger("${req.data.getRoute() ?? ''}: response received!: ${response.success} ${response.error?.code}");
+      req.onResponse(response);
+      _pendingRequestsList.remove(req);
+    } else {
+      logger(response.clientRequestId.toString());
+      logger("Response received, but did nothing, probably because the request timed out before. clientRequestId: ${response.clientRequestId}", level: Level.debug);
+    }
     // });
   }
 
   void setAsReceivedPendingMessageThatServerShouldReceive(String clientRequestId) {
     // _lockPendingRequestsList.synchronized(() async {
-      final pending = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == clientRequestId,);
-      pending?.serverReceived = true;
+    final pending = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == clientRequestId,);
+    pending?.serverReceived = true;
     // });
   }
 
@@ -85,62 +85,63 @@ class RequestsService {
     data.clientRequestId ??= '${REQUEST_PREFIX}_${randomAlphaNumeric(28)}';
 
     // ignore: prefer_function_declarations_over_variables
-    final sendAgainWhenConnected = (ConnectionDetails connection) async {
+    final sendWhenConnected = (ConnectionDetails connection) async {
       if (connection.status == ConnectionStatus.connected) {
         if (isAfterAuthentication) {
           await getIt.get<AuthenticateService>().waitForAuthentication(neverTimeout: false, isPersevere: () => false);
         }
-        logger("sending AGAIN because is connected");
+        logger('Sending data to server...', level: Level.debug,);
         ws.sinkAdd(map: data);
       }
     };
 
     final _Request request = _Request(data, (response) {
+      getIt.get<ConnectionService>().removeOnConnectionChange(sendWhenConnected);
       if (!completer.isCompleted){
-        getIt.get<ConnectionService>().removeOnConnectionChange(sendAgainWhenConnected);
         completer.complete(response);
       }
     });
 
-    getIt.get<ConnectionService>().addOnConnectionChangeListener(sendAgainWhenConnected, immediately: false);
+    getIt.get<ConnectionService>().addOnConnectionChangeListener(sendWhenConnected, immediately: request.data.requestType != RequestType.CONFIGURE_CONNECTION, beforeOthersListeners: data.requestType == RequestType.CONFIGURE_CONNECTION || data.requestType == RequestType.AUTHENTICATE);
 
     if (neverTimeout == false && connectionConfiguration.requestTimeoutInMs > 0) {
       Future.delayed(Duration(milliseconds: connectionConfiguration.requestTimeoutInMs), () {
         // _lockPendingRequestsList.synchronized(() async {
-          final remove = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == request.data.clientRequestId,);
-          if (remove != null) {
-            _pendingRequestsList.remove(remove);
-            request.onResponse(InternalAsklessResponseEntity(
-                clientRequestId: data.clientRequestId!,
-                error: AsklessError(code: AsklessErrorCode.noConnection, description: 'Request timed out')
-            ));
-            logger('Your request (${data.requestType}) \"${data.getRoute() ?? ''}\" timed out, check if: \n\t1) Your server configuration is serving on ${serverUrl}\n\t2) Your device has connection with internet\n\t3) Your API route implementation calls context.success or context.error methods', level: Level.error);
-          }
-        });
+        final remove = _pendingRequestsList.firstWhereOrNull((p) => p.data.clientRequestId == request.data.clientRequestId,);
+        if (remove != null) {
+          _pendingRequestsList.remove(remove);
+          request.onResponse(InternalAsklessResponseEntity(
+              clientRequestId: data.clientRequestId!,
+              error: AsklessError(code: AsklessErrorCode.noConnection, description: 'Request timed out')
+          ));
+          logger('Your request (${data.requestType}) \"${data.getRoute() ?? ''}\" timed out, check if: \n\t1) Your server configuration is serving on ${serverUrl}\n\t2) Your device has connection with internet\n\t3) Your API route implementation calls context.success or context.error methods', level: Level.error);
+        }
+      });
       // });
     }
 
 
     // await _lockPendingRequestsList.synchronized(() async {
-      if (ws.isReady == true){
+    if (ws.isReady == true){
+      await _addAsPending(request);
+    } else {
+      if (data.waitUntilGetServerConnection) {
         await _addAsPending(request);
+        logger('Waiting connection to send message', level: Level.debug);
       } else {
-        if (data.waitUntilGetServerConnection) {
-          await _addAsPending(request);
-          logger('Waiting connection to send message', level: Level.debug);
-        } else {
-          logger('You can\'t send this message while not connected', level: Level.debug);
-          request.onResponse(InternalAsklessResponseEntity(
-              clientRequestId: data.clientRequestId!,
-              error: AsklessError(description: 'Maybe de device has no internet or the server is offline', code: 'AsklessErrorCode.noConnection')
-            )
-          );
-        }
+        logger('You can\'t send this message while not connected', level: Level.debug);
+        request.onResponse(InternalAsklessResponseEntity(
+            clientRequestId: data.clientRequestId!,
+            error: AsklessError(description: 'Maybe de device has no internet or the server is offline', code: 'AsklessErrorCode.noConnection')
+        )
+        );
       }
-    // });
-    //In the end:
-    logger('Sending data to server...', level: Level.debug,);
-    ws.sinkAdd(map: data);
+    }
+
+    if (request.data.requestType == RequestType.CONFIGURE_CONNECTION) {
+      logger('Sending data to server...', level: Level.debug,);
+      ws.sinkAdd(map: data);
+    }
 
     final response = await completer.future;
     if (ifRequiresAuthenticationWaitForIt && response.error?.code == AsklessErrorCode.pendingAuthentication) {
@@ -172,28 +173,31 @@ class RequestsService {
     return response;
   }
 
-  //A RESPOSTA ESTÁ VINDO ANTES DO addAsPending
-
   Future<void> _addAsPending (_Request request) async {
-    //Se for um listening, deve ficar no final, do contrário
-    //corre o risco de receber 2 dados iguais por conta do método onClientListen na Server
-    // await _lockPendingRequestsList.synchronized(() {
-      _pendingRequestsList.add(request);
-      _pendingRequestsList.sort((a,b) {
-        if (a.data.requestType == RequestType.CONFIGURE_CONNECTION) {
-          return -2;
-        }
-        if (b.data.requestType == RequestType.CONFIGURE_CONNECTION) {
-          return 2;
-        }
-        if (a.data.requestType == RequestType.AUTHENTICATE) {
-          return -1;
-        }
-        if (b.data.requestType == RequestType.AUTHENTICATE) {
-          return 1;
-        }
-        return 0;
-      });
-    // });
+    _pendingRequestsList.add(request);
+    _pendingRequestsList.sort((a,b) {
+      // Listen should always be in the END!
+      if (a.data.requestType == RequestType.LISTEN) {
+        return 3;
+      }
+      if (b.data.requestType == RequestType.LISTEN) {
+        return -3;
+      }
+
+      if (a.data.requestType == RequestType.CONFIGURE_CONNECTION) {
+        return -2;
+      }
+      if (b.data.requestType == RequestType.CONFIGURE_CONNECTION) {
+        return 2;
+      }
+      if (a.data.requestType == RequestType.AUTHENTICATE) {
+        return -1;
+      }
+      if (b.data.requestType == RequestType.AUTHENTICATE) {
+        return 1;
+      }
+
+      return 0;
+    });
   }
 }
