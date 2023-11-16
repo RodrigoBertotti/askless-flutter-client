@@ -149,6 +149,9 @@ class RequestsService {
       request.data.clientRequestId = '${REQUEST_PREFIX}_${randomAlphaNumeric(28)}';
       logger("${request.data.getRoute() ?? ''}: NEW clientRequestId IS ${request.data.clientRequestId}, now it will wait for the authentication to finished...");
       isAfterAuthentication = true;
+      if (getIt.get<AuthenticateService>().authStatus == AuthStatus.authenticated) {
+        logger("(waitForAuthentication, request_service.dart) Ops, this shouldn't happen, the App says it is authenticated but the server says is not authenticated", level: Level.error);
+      }
       final authenticated = await getIt.get<AuthenticateService>().waitForAuthentication(
           neverTimeout: neverTimeout,
           isPersevere: isPersevere,

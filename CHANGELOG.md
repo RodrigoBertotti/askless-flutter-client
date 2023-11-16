@@ -1,3 +1,9 @@
+# 3.0.2
+- Error message was appearing in the wrong moment
+
+# 3.0.1
+- Fix: "Ops, it should perform configure connection first"
+
 # 3.0.0
 Askless was redesigned and is even better! So you can build your App and backend like a pro!
 - Several bug fixes

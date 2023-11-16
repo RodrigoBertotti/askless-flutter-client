@@ -38,9 +38,6 @@ class AuthenticateService<USER_ID> {
   Future<bool> waitForAuthentication(
       {required bool neverTimeout, required bool Function() isPersevere, RequestType? requestType, String? route}) {
     if (_authStatus == AuthStatus.authenticated) {
-      logger(
-          "(waitForAuthentication) Ops, this shouldn't happen, the App says it is authenticated but the server says is not authenticated",
-          level: Level.error);
       return Future.value(true);
     }
     final completer = Completer<bool>();

@@ -136,6 +136,9 @@ class ListeningHandler {
     listenCli.clientRequestId = '${LISTEN_PREFIX}_${randomAlphaNumeric(28)}';
     getIt.get<RequestsService>().runOperationInServer(data: listenCli, isPersevere: res.isPersevere, neverTimeout: true, ifRequiresAuthenticationWaitForIt: false).then((firstResponse) {
       if (firstResponse.error?.code == AsklessErrorCode.pendingAuthentication) {
+        if (getIt.get<AuthenticateService>().authStatus == AuthStatus.authenticated) {
+          logger("(waitForAuthentication ListeningHandler) Ops, this shouldn't happen, the App says it is authenticated but the server says is not authenticated", level: Level.error);
+        }
         getIt.get<AuthenticateService>().waitForAuthentication(neverTimeout: true, isPersevere: res.isPersevere, requestType: RequestType.LISTEN, route: listenCli.route).then((authenticated) {
           if (!authenticated){
             logger('waitForAuthentication failed', level: Level.error);

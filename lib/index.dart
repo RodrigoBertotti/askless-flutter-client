@@ -471,7 +471,7 @@ class AsklessClient<USER_ID> {
   ///
   /// [getWebRTCParams] For video and audio calls only. (optional)
   ///
-  /// ⚠️ **[Requires configuration, click here to proceed](#video-and-audio-calls)**
+  /// ⚠️ **[Requires configuration, click here to proceed](https://github.com/RodrigoBertotti/askless-flutter-client/blob/dev/documentation.md#video-and-audio-calls)**
   ///
   /// A function that returns a future object of type `WebRTCParams` which allows you to
   /// set `configuration` and `constraints` Map objects from WebRTC,
