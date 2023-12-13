@@ -59,7 +59,7 @@ simply add a double-check icon in your chat app once the message is delivered
 
 #### Examples
 *  <sup>Level:</sup> <sup>:red_circle: :white_circle: :white_circle: :white_circle: :white_circle:</sup> [Flutter Random Numbers Example](example/random_numbers): Random numbers are generated on the server.
-*  <sup>Level:</sup> <sup>:red_circle: :red_circle: :white_circle: :white_circle: :white_circle:</sup>[Flutter Simple Chat Example](example/simple_chat): Simple chat between the colors blue and green.
+*  <sup>Level:</sup> <sup>:red_circle: :red_circle: :white_circle: :white_circle: :white_circle:</sup> [Flutter Simple Chat Example](example/simple_chat): Simple chat between the colors blue and green.
 *  <sup>Level:</sup> <sup>:red_circle: :red_circle: :red_circle: :white_circle: :white_circle:</sup> [Flutter Catalog Example](example/catalog): Users adding and removing products from a catalog.
 *  <sup>Level:</sup> <sup>:red_circle: :red_circle: :red_circle: :red_circle: :red_circle:</sup> [Flutter Chat App with MySQL or PostgreSQL + video and audio calls](https://github.com/RodrigoBertotti/flutter_chat_app_with_nodejs): A Flutter Chat App with MySQL, WebSockets, and Node.js,
    supports live video and audio calls streaming with WebRTC in Flutter.
