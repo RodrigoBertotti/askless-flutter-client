@@ -1,7 +1,7 @@
 name: askless
 description: Build Flutter Apps with PostgreSQL, MySQL, or any database, stream data changes through websockets effortlessly, handle websocket authentication like a pro and elevate your Flutter Chat App with video and audio calls!
 
-version: 3.0.2 # TODO onupdate:
+version: 3.1.0 # TODO onupdate:
 
 environment:
   sdk: '>=3.1.1 <4.0.0'
@@ -18,20 +18,20 @@ dependencies:
   flutter:
     sdk: flutter
   random_string: ^2.3.1
-  synchronized: ^3.1.0
-  connectivity_plus: ^4.0.2
-  web_socket_channel: ^2.4.0
+  synchronized: ^3.1.0+1
+  connectivity_plus: ^5.0.2
+  web_socket_channel: ^2.4.4
   injectable: ^2.3.0
-  get_it: ^7.6.4
-  collection: ^1.17.2
-  meta: ^1.9.1
-  flutter_webrtc: ^0.9.41
-  safe_device: ^1.1.4
+  get_it: ^7.6.7
+  collection: ^1.18.0
+  meta: ^1.11.0
+  flutter_webrtc: ^0.9.48+hotfix.1
+  safe_device: ^1.1.6
 
 dev_dependencies:
   test: ^1.24.6
   injectable_generator: ^2.4.0
-  build_runner: ^2.4.6
+  build_runner: ^2.4.8
 
 #dev_dependencies:
 #  flutter_test:

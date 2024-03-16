@@ -86,7 +86,7 @@ pubspec.yaml:
         sdk: flutter
         
       # Add this line:
-      askless: ^3.0.2
+      askless: ^3.1.0
 
 **5 -** Import the package
 

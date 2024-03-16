@@ -1,3 +1,6 @@
+# 3.1.0
+- Dependencies have been updated
+
 # 3.0.2
 - Error message was appearing in the wrong moment
 
