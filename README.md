@@ -102,18 +102,6 @@ Example:
 **7 -** Here we go! Now you can start using building your Flutter App with Askless,
 check the **[documentation](documentation.md)** and **[examples](#Examples)**!
 
-## Issues
-
-Feel free to open an issue about:
-
-- :grey_question: questions
-
-- :bulb: suggestions
-
-- :page_facing_up: documentation improvements
-
-- :ant: potential bugs
-
 ## Thanks
 Thank you for using Askless!
 
